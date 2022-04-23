@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node -r dotenv/config index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Julián Boetto",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.26.1",
