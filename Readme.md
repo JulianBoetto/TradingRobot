@@ -1,6 +1,6 @@
 Ben-vind@s! 
 
-# Essa API é um bot para fazer trader na Binance
+# Essa API é um bot para fazer tradeding na Binance
 
 - Para utilizar ele tem que criar um arquivo ".env" com os dados do arquivo ".env.example".
 
