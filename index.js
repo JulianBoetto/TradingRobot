@@ -1,5 +1,6 @@
 const api = require('./api');
 const symbol = process.env.SYMBOL
+const profitability = parseFloat(process.env.PROFITABILITY)
 
 setInterval(async () => {
     let buy = 0, sell = 0;
@@ -28,6 +29,13 @@ setInterval(async () => {
             const buyOrder = await api.newOrder(symbol, 1)
             console.log(`orderId: ${buyOrder.orderId}`);
             console.log(`status: ${buyOrder.status}`);
+
+            console.log('Posicionando venda futura');
+            const price = parseInt(sell * profitability);
+            console.log(`Vendendo por ${price} (${profitability})`)
+            const sellOrder = await api.newOrder(symbol, 1, price, 'SELL', 'LIMIT');
+            console.log(`orderId: ${sellOrder.orderId}`);
+            console.log(`status: ${sellOrder.status}`);
         }
     }
 
