@@ -65,4 +65,8 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-module.exports = { time, depth, exchangeInfo, accountInfo, newOrder }
+async function historicData(symbol, limit = 5) {
+    return publicCall('/fapi/v1/klines', {symbol, limit})
+}
+
+module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, historicData }
