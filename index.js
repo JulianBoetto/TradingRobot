@@ -21,6 +21,14 @@ setInterval(async () => {
         const coins = account.balances.filter(b => symbol.indexOf(b.asset) !== -1);
         console.log(`POSIÇÃO DA CARTEIRA`)
         console.log(coins);
+
+        console.log('Verificando o meu dinheiro...')
+        if(sell <= parseInt(coins.find(c => c.asset === 'BUSD').free)){
+            console.log('Temos dinheiro, comprando agora...')
+            const buyOrder = await api.newOrder(symbol, 1)
+            console.log(`orderId: ${buyOrder.orderId}`);
+            console.log(`status: ${buyOrder.status}`);
+        }
     }
 
     else if(buy > 200000 ) {
