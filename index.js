@@ -16,7 +16,11 @@ setInterval(async () => {
 
     if(sell < 192300 ) {
         console.log('Hora de comprar!!')
-        console.log(await api.accountInfo());
+
+        const account = await api.accountInfo();
+        const coins = account.balances.filter(b => symbol.indexOf(b.asset) !== -1);
+        console.log(`POSIÇÃO DA CARTEIRA`)
+        console.log(coins);
     }
 
     else if(buy > 200000 ) {
