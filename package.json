@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config index",
+    "dev": "nodemon -r dotenv/config index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Julián Boetto",
@@ -12,6 +13,11 @@
   "dependencies": {
     "axios": "^0.26.1",
     "dotenv": "^16.0.0",
+    "ejs": "^3.1.7",
+    "express": "^4.17.3",
+    "lightweight-charts": "^3.8.0",
+    "moment": "^2.29.3",
+    "nodemon": "^2.0.15",
     "websocket": "^1.0.34"
   }
 }

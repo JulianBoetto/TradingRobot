@@ -65,8 +65,8 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-async function historicData(symbol, limit = 5) {
-    return publicCall('/fapi/v1/klines', {symbol, limit})
+async function historicData(symbol, interval = '1d') {
+    return publicCall('/v3/klines', {symbol, interval})
 }
 
 module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, historicData }

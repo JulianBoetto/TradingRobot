@@ -1,101 +1,24 @@
 const api = require('./api');
+const express = require('express')
+const moment = require('moment')
+const port = 3000
+const app = express()
 const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
-var WebSocketClient = require('websocket').client;
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json());
+app.use(express.static("public"));
+app.set('view engine', 'ejs');
 
-setInterval(async () => {
-    // let buy = 0, sell = 0;
-    // const result = await api.depth(symbol);
-    // if(result.bids && result.bids.length ){
-    //     console.log(`Maior preço de compra: ${result.bids[0][0]}`);
-    //     buy = parseFloat(result.bids[0][0]);
-    // }
-
-    // if(result.asks && result.asks.length){
-    //     console.log(`Menor preço de venda: ${result.asks[0][0]}`);
-    //     sell = parseFloat(result.asks[0][0]);
-    // }
-
-    //     const account = await api.accountInfo();
-    //     console.log(account)
-
+let data;
+app.get('/', async (req,res) =>{
     const result = await api.historicData(symbol)
-    console.log(result)
-    // var client = new WebSocketClient();
+    data = result.map(result => ({ time: moment(result[0]).utc().format('YYYY-MM-DD'), open: parseFloat(result[1]), high: parseFloat(result[2]), low: parseFloat(result[3]), close: parseFloat(result[4]) }))
 
-    // client.on('connectFailed', function(error) {
-    //     console.log('Connect Error: ' + error.toString());
-    // });
-    
-    // client.on('connect', function(connection) {
-    //     console.log('WebSocket Client conectado');
-    //     connection.on('error', function(error) {
-    //         console.log("Connection Error: " + error.toString());
-    //     });
-    //     connection.on('close', function() {
-    //         console.log('Binance Connection Closed');
-    //     });
-    //     connection.on('message', function(message) {
-    //         if (message.type === 'utf8') {
-    //             console.log("Received: '" + message.utf8Data + "'");
-    //         }
-    //     });
-        
-    //     // function sendNumber() {
-    //     //     if (connection.connected) {
-    //     //         var number = Math.round(Math.random() * 0xFFFFFF);
-    //     //         connection.sendUTF(number.toString());
-    //     //         setTimeout(sendNumber, 1000);
-    //     //     }
-    //     // }
-    //     // sendNumber();
-    // });
-    
-    // client.connect('wss://stream.binance.com:9443/ws/btcusdt@trade');
+    // console.log({ time: moment(result[0][0]).format('YYYY-MM-DD'), open: parseFloat(result[0][1]), high: parseFloat(result[0][2]), low: parseFloat(result[0][3]), close: parseFloat(result[0][4]) })
+    res.render('index', {data, symbol})
+})
 
-
-
-    // const binanceSocket = new WebSocketClient('wss://stream.binance.com:9443/ws/btcusdt@trade')
-    // binanceSocket.onmessage = function (event) {
-    //     console.log(data)
-    // }
-
-    // if(sell && sell < goodBuy ) {
-    //     console.log('Hora de comprar!!')
-
-    //     const account = await api.accountInfo();
-    //     const coins = account.balances.filter(b => symbol.indexOf(b.asset) !== -1);
-    //     console.log(`POSIÇÃO DA CARTEIRA`)
-    //     console.log(coins);
-        
-    //     console.log('Verificando o meu dinheiro...')
-    //     const walletCoin = parseFloat(coins.find(c => c.asset === coin).free)
-    //     console.log(walletCoin)
-    //     if(sell <= walletCoin){
-    //         console.log('Temos dinheiro, comprando agora...')
-    //         const buyOrder = await api.newOrder(symbol, 1)
-    //         console.log(`orderId: ${buyOrder.orderId}`);
-    //         console.log(`status: ${buyOrder.status}`);
-
-    //         if(buyOrder.status === 'FILLED') {
-    //             console.log('Posicionando venda futura');
-    //             const price = parseFloat(sell * profitability).toFixed(5);
-    //             console.log(`Vendendo por ${price} (${profitability})`)
-    //             const sellOrder = await api.newOrder(symbol, 1, price, 'SELL', 'LIMIT');
-    //             console.log(`orderId: ${sellOrder.orderId}`);
-    //             console.log(`status: ${sellOrder.status}`);
-    //         }
-
-    //     }
-    // }
-
-    // else if(buy && buy > goodBuy ) {
-    //     console.log('Hora de vender!!')
-    // } 
-
-    // else {
-    //     console.log('Esperando...')
-    // }
-}, process.env.CRAWLER_INTERVAL);
+app.listen(port, () => console.log(`Servidor funcionando. http://localhost:${port}`))
