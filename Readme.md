@@ -1,5 +1,7 @@
 Ben-vind@s! 
 
+https://tradingrobot.herokuapp.com/
+
 # Essa API é um bot para fazer trader na Binance
 
 - Para utilizar ele tem que criar um arquivo ".env" com os dados do arquivo ".env.example".
