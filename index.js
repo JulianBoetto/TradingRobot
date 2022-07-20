@@ -1,5 +1,6 @@
 const api = require('./api');
-const path = require("path")
+const path = require("path");
+const WebSocket = require("ws")
 const express = require("express");
 const { json } = require('express');
 const app = express(json);
@@ -27,12 +28,28 @@ app.get('/contact', (req, res) => {
 app.get('/trading', async (req, res) => {
     try {
         const result = await api.depth(symbol);
+        
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
         // const account = await api.accountInfo();
-        console.log(result, symbol)
-        res.send({bids: result.bids, sell: result.asks})        
+        
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                "method": "SUBSCRIBE",
+                "params": [
+                    `btcusdt@ticker`
+                ],
+                "id": 1
+            }))
+        }
+        ws.onmessage = (event) => {
+            process.stdout.write("\033c")
+            const obj = JSON.parse(event.data)
+            console.log(obj.c)
+        }     
+        res.send({})
     } catch (error) {
         console.log(error)
-        res.send(result)
+        res.send(error)
     }
 });
 
