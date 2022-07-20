@@ -1,5 +1,6 @@
 const api = require('./api');
 const path = require("path");
+const ejs = require("ejs")
 const WebSocket = require("ws")
 const express = require("express");
 const { json } = require('express');
@@ -14,7 +15,7 @@ const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
 
 app.get('/', (req, res) => {
-    res.sendFile('views/index.html', {root: __dirname })
+    res.sendFile('views/index.html', {root: __dirname, teste: "teste"})
 });
 
 app.get('/profile', (req, res) => {
@@ -29,24 +30,11 @@ app.get('/trading', async (req, res) => {
     try {
         const result = await api.depth(symbol);
         
-        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
-        // const account = await api.accountInfo();
-        
-        ws.onopen = () => {
-            ws.send(JSON.stringify({
-                "method": "SUBSCRIBE",
-                "params": [
-                    `btcusdt@ticker`
-                ],
-                "id": 1
-            }))
-        }
-        ws.onmessage = (event) => {
-            process.stdout.write("\033c")
-            const obj = JSON.parse(event.data)
-            console.log(obj.c)
-        }     
-        res.send({})
+        ejs.renderFile(path.join(__dirname, "views/trading.ejs"), { teste: "teste" }, (err, html) => {
+                  return res.send(html)
+                }
+            );
+        // res.send(data.c)
     } catch (error) {
         console.log(error)
         res.send(error)
@@ -54,6 +42,28 @@ app.get('/trading', async (req, res) => {
 });
 
 app.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
+
+// function getCriptoValue() {
+//     let data = [];
+//     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+//     // const account = await api.accountInfo();
+    
+//     ws.onopen = () => {
+//         ws.send(JSON.stringify({
+//             "method": "SUBSCRIBE",
+//             "params": [
+//                 `btcusdt@ticker`
+//             ],
+//             "id": 1
+//         }))
+//     }
+//     ws.onmessage = (event) => {
+//         process.stdout.write("\033c")
+//         data = JSON.parse(event.data)
+//         console.log(data.c)
+//         return data.c
+//     }
+// }
 
 // setInterval(async () => {
 //     let buy = 0, sell = 0;
