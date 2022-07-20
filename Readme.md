@@ -16,6 +16,6 @@ Ben-vind@s!
 
 <!-- PARA RODAR A API -->
 
-- Para instalar os pacotes: "npm install".
+- Para instalar os pacotes: "npm ci".
 
 - Para rodar a API: "npm start".
