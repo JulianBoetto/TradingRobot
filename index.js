@@ -27,9 +27,9 @@ app.get('/contact', (req, res) => {
 app.get('/trading', async (req, res) => {
     try {
         const result = await api.depth(symbol);
-        console.log(process.env.API_URL)
-        console.log(result)
-        res.send(result)        
+        // const account = await api.accountInfo();
+        console.log(result, symbol)
+        res.send({bids: result.bids, sell: result.asks})        
     } catch (error) {
         console.log(error)
         res.send(result)
