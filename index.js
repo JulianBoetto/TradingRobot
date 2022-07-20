@@ -3,6 +3,7 @@ const path = require("path")
 const express = require("express")
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'jade');
 const PORT = 3000;
 const symbol = process.env.SYMBOL;
@@ -12,6 +13,14 @@ const goodBuy = process.env.GOOD_BUY;
 
 app.get('/', function(req, res) {
     res.sendFile('views/index.html', {root: __dirname })
+});
+
+app.get('/profile', function(req, res) {
+    res.sendFile('views/users-profile.html', {root: __dirname })
+});
+
+app.get('/contact', function(req, res) {
+    res.sendFile('views/pages-contact.html', {root: __dirname })
 });
 
 app.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
