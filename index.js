@@ -14,7 +14,7 @@ app.get('/', function(req, res) {
     res.sendFile('views/index.html', {root: __dirname })
 });
 
-app.listen(PORT, () => console.log(`Server run in port: ${PORT}`))
+app.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
 
 // setInterval(async () => {
 //     let buy = 0, sell = 0;
