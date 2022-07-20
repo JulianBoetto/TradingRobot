@@ -1,7 +1,8 @@
 const api = require('./api');
 const path = require("path")
-const express = require("express")
-const app = express();
+const express = require("express");
+const { json } = require('express');
+const app = express(json);
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'jade');
@@ -11,16 +12,28 @@ const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.sendFile('views/index.html', {root: __dirname })
 });
 
-app.get('/profile', function(req, res) {
+app.get('/profile', (req, res) => {
     res.sendFile('views/users-profile.html', {root: __dirname })
 });
 
-app.get('/contact', function(req, res) {
+app.get('/contact', (req, res) => {
     res.sendFile('views/pages-contact.html', {root: __dirname })
+});
+
+app.get('/trading', async (req, res) => {
+    try {
+        const result = await api.depth(symbol);
+        console.log(process.env.API_URL)
+        console.log(result)
+        res.send(result)        
+    } catch (error) {
+        console.log(error)
+        res.send(result)
+    }
 });
 
 app.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
