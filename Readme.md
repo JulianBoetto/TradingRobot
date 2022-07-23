@@ -20,4 +20,4 @@ https://tradingrobot.herokuapp.com/
 
 - Para instalar os pacotes: "npm ci".
 
-- Para rodar a API: "npm start".
+- Para rodar a API: "npm run dev" / "npm start".

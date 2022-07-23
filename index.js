@@ -33,9 +33,30 @@ app.get('/contact', (req, res) => {
 app.get('/trading', async (req, res) => {
     try {
         // const result = await api.depth(symbol);
-    res.sendFile('views/trading.html', {root: __dirname })
-
+        // function getCriptoValue() {
+        //     let data = [];
+        //     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+        //     // const account = await api.accountInfo();
+            
+        //     ws.onopen = () => {
+        //         ws.send(JSON.stringify({
+        //             "method": "SUBSCRIBE",
+        //             "params": [
+        //                 `btcusdt@ticker`
+        //             ],
+        //             "id": 1
+        //         }))
+        //     }
+        //     ws.onmessage = (event) => {
+        //         process.stdout.write("\033c")
+        //         data = JSON.parse(event.data)
+        //         console.log(data.c)
+        //         return data.c
+        //     }
+        // }
         
+        
+        res.sendFile('views/trading.html', {root: __dirname })
         // ejs.renderFile(path.join(__dirname, "views/trading.ejs"), { teste: "teste" }, (err, html) => {
         //           return res.send(html)
         //         }
@@ -47,37 +68,29 @@ app.get('/trading', async (req, res) => {
     }
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
 
+server.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
+
+io.on('connection', (socket) => {
+    console.log("cliente conectado")
+    io.on('connection', (socket) => {
+        //     socket.on('chat message', (msg) => {
+            //         io.emit('chat message', result);
+            //     });
+        // const teste = "teste"
+        // socket.on('client_data', function () {
+        //     console.log("connected client")
+        //     // console.log('A user disconnected');
+        //     io.emit('client_data', teste)
+        // });
+    });
+    
+    
     socket.on('disconnect', function () {
         console.log('A user disconnected');
     });
 });
 
-server.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
-
-// function getCriptoValue() {
-//     let data = [];
-//     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
-//     // const account = await api.accountInfo();
-    
-//     ws.onopen = () => {
-//         ws.send(JSON.stringify({
-//             "method": "SUBSCRIBE",
-//             "params": [
-//                 `btcusdt@ticker`
-//             ],
-//             "id": 1
-//         }))
-//     }
-//     ws.onmessage = (event) => {
-//         process.stdout.write("\033c")
-//         data = JSON.parse(event.data)
-//         console.log(data.c)
-//         return data.c
-//     }
-// }
 
 // setInterval(async () => {
 //     let buy = 0, sell = 0;
