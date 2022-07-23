@@ -18,6 +18,8 @@ const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
 
+let cryptoData = "";
+
 app.get('/', (req, res) => {
     res.sendFile('views/index.html', {root: __dirname, teste: "teste"})
 });
@@ -32,29 +34,9 @@ app.get('/contact', (req, res) => {
 
 app.get('/trading', async (req, res) => {
     try {
-        // const result = await api.depth(symbol);
-        // function getCriptoValue() {
-        //     let data = [];
-        //     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
-        //     // const account = await api.accountInfo();
-            
-        //     ws.onopen = () => {
-        //         ws.send(JSON.stringify({
-        //             "method": "SUBSCRIBE",
-        //             "params": [
-        //                 `btcusdt@ticker`
-        //             ],
-        //             "id": 1
-        //         }))
-        //     }
-        //     ws.onmessage = (event) => {
-        //         process.stdout.write("\033c")
-        //         data = JSON.parse(event.data)
-        //         console.log(data.c)
-        //         return data.c
-        //     }
-        // }
+// const result = await api.depth(symbol);
         
+        getCriptoValue()
         
         res.sendFile('views/trading.html', {root: __dirname })
         // ejs.renderFile(path.join(__dirname, "views/trading.ejs"), { teste: "teste" }, (err, html) => {
@@ -71,25 +53,53 @@ app.get('/trading', async (req, res) => {
 
 server.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
 
-io.on('connection', (socket) => {
-    console.log("cliente conectado")
-    io.on('connection', (socket) => {
-        //     socket.on('chat message', (msg) => {
-            //         io.emit('chat message', result);
-            //     });
-        // const teste = "teste"
-        // socket.on('client_data', function () {
-        //     console.log("connected client")
-        //     // console.log('A user disconnected');
-        //     io.emit('client_data', teste)
-        // });
-    });
+async function getCriptoValue() {
+    io.on("connection", (socket) => {
+        console.log("cliente conectado", socket.id)
+    })
+    let data = [];
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+    // const account = await api.accountInfo();
+    
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            "method": "SUBSCRIBE",
+            "params": [
+                `btcusdt@ticker`
+            ],
+            "id": 1
+        }))
+    }
+    ws.onmessage = (event) => {
+        process.stdout.write("\033c")
+        data = JSON.parse(event.data)
+        // console.log(data.c)
+        // cryptoData = data.c
+        io.emit('chat message', data);
+    }
+    // console.log(data)
+    // return data
+}
+
+const teste = getCriptoValue()
+// io.on('connection', (socket) => {
+//     console.log("cliente conectado", socket.id)
+//     // io.emit('chat message', getCriptoValue());
+//     // RECEBENDO DADOS DO HTML
+//     // socket.on('chat message', (msg) => {
+//     //     io.emit('chat message', cryptoData);
+//     // });
+//         // socket.on('client_data', function () {
+//         //     console.log("connected client")
+//         //     // console.log('A user disconnected');
+//         //     io.emit('client_data', teste)
+//         // });
     
     
-    socket.on('disconnect', function () {
-        console.log('A user disconnected');
-    });
-});
+//     // socket.on('disconnect', function () {
+//     //     console.log('A user disconnected');
+//     // });
+// });
 
 
 // setInterval(async () => {
