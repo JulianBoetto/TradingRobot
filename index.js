@@ -18,6 +18,9 @@ const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
 
+// const coinName = document.getElementById('coinName');
+
+
 let cryptoData = "";
 
 app.get('/', (req, res) => {
@@ -39,11 +42,6 @@ app.get('/trading', async (req, res) => {
         getCriptoValue()
         
         res.sendFile('views/trading.html', {root: __dirname })
-        // ejs.renderFile(path.join(__dirname, "views/trading.ejs"), { teste: "teste" }, (err, html) => {
-        //           return res.send(html)
-        //         }
-        //     );
-        // res.send(data.c)
     } catch (error) {
         console.log(error)
         res.send(error)
@@ -56,6 +54,9 @@ server.listen(process.env.PORT || PORT, () => console.log(`Server run in port: $
 async function getCriptoValue() {
     io.on("connection", (socket) => {
         console.log("cliente conectado", socket.id)
+    })
+    io.on("coin name", (coinName) => {
+        console.log(coinName)
     })
     let data = [];
     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
