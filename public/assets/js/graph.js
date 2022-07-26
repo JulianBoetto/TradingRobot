@@ -16,7 +16,24 @@ function hideEle(elementId) {
 }
 
 var ctx = document.getElementById("weatherChart").getContext("2d");
-var options = {};
+var options = {
+  plugins: {
+    autocolors: false,
+    annotation: {
+      annotations: {
+        box1: {
+          // Indicates the type of annotation
+          type: 'box',
+          xMin: 1,
+          xMax: 2,
+          yMin: 50,
+          yMax: 70,
+          backgroundColor: 'rgba(255, 99, 132, 0.25)'
+        }
+      }
+    }
+  }
+};
 
 const weatherChartRef = new Chart(ctx, {
   type: "line",
@@ -52,7 +69,6 @@ function onFetchTempSuccess() {
   const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
 
   ws.onopen = () => {
-    connections = true
     ws.send(JSON.stringify({
       "method": "SUBSCRIBE",
       "params": [
@@ -67,6 +83,7 @@ function onFetchTempSuccess() {
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data)
     if(data.c) {
+      console.log(data)
       hideEle("loader");
       num += 1
       data.time = num
