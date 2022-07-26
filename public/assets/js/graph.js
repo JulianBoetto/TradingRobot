@@ -1,5 +1,3 @@
-const socket = io();
-
 const form = document.getElementById('searchForm');
 const input = document.getElementById('input');
 
@@ -9,11 +7,11 @@ const coinNameElement = document.getElementById('coinName');
 
 let coinName = "btcusdt";
 
-function showEle(elementId){
+function showEle(elementId) {
   document.getElementById(elementId).style.display = 'flex';
 }
 
-function hideEle(elementId){
+function hideEle(elementId) {
   document.getElementById(elementId).style.display = 'none';
 }
 
@@ -45,40 +43,50 @@ const weatherChartRef = new Chart(ctx, {
       pointHitRadius: 10,
       data: [],
       spanGaps: false,
-   }]
+    }]
   },
   options: options
 });
 
- function onFetchTempSuccess(){
+function onFetchTempSuccess() {
+  const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+
+  ws.onopen = () => {
+    connections = true
+    ws.send(JSON.stringify({
+      "method": "SUBSCRIBE",
+      "params": [
+        `${coinName}@ticker`
+      ],
+      "id": 1
+    }));
   }
 
-socket.on('coin', function(msg) {        
-  if(msg.c) {
-    coinNameElement.innerHTML = msg.s
-    weatherChartRef.data.labels.push(msg.time);
-    weatherChartRef.data.datasets[0].data.push(msg.c);
-    
-    // if(weatherChartRef.data.datasets[0].data.length === 30) {
-    //   weatherChartRef.data.labels = [];
-    //   weatherChartRef.data.datasets[0].data = [];
-    // }
+  let num = 0;
 
-    weatherChartRef.update();
-    atualValue.innerHTML = Number(msg.c).toLocaleString("en-US", {style:"currency", currency:"USD"});
-    hideEle("loader");
-    if(msg.p < 0) {
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    if(data.c) {
+      hideEle("loader");
+      num += 1
+      data.time = num
+      weatherChartRef.data.labels.push(num);
+      weatherChartRef.data.datasets[0].data.push(Number(data.c));
+      weatherChartRef.update();
+      coinNameElement.innerHTML = data.s
+      atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+      if (data.p < 0) {
         percentual.classList.remove("text-success");
         percentual.classList.add("text-danger");
-    } else {
+      } else {
         percentual.classList.remove("text-danger");
         percentual.classList.add("text-success");
+      }
+      percentual.innerHTML = `${data.P} %`
     }
-    percentual.innerHTML = `${msg.P} %`
   }
-}); 
-  
-  
+}
+
 (
   showEle("loader"),
   onFetchTempSuccess
