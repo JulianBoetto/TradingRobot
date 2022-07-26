@@ -10,18 +10,18 @@ const coinNameElement = document.getElementById('coinName');
 
 
 
-function getCoin(e) {
+// function getCoin(e) {
     let coinName = "btcusdt";
 
-    e.preventDefault()
-    if(form.query.value) {
-        coinName = form.query.value
-    }
+    // e.preventDefault()
+    // if(form.query.value) {
+    //     coinName = form.query.value
+    // }
     // console.log(form.query.value)
     // socket.on("coin name", function() {
-        socket.emit("coin name", coinName)
+        // socket.emit("coin name", coinName)
     // })
-    socket.on('chat message', function(msg) {        
+    socket.on('coin', function(msg) {        
         if(msg.c) {
             // console.log(msg)
             atualValue.innerHTML = Number(msg.c).toLocaleString("en-US", {style:"currency", currency:"USD"});
@@ -36,9 +36,9 @@ function getCoin(e) {
             coinNameElement.innerHTML = msg.s
         }
     });    
-}
+// }
 
 
-form.addEventListener("submit", (event) => {
-    getCoin(event)
-});
+// form.addEventListener("submit", (event) => {
+//     getCoin(event)
+// });

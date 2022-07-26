@@ -58,10 +58,10 @@ async function getCriptoValue() {
 
     io.on("connection", (socket) => {
         console.log("cliente conectado", socket.id)
-        socket.on("coin name", (name) => {
-            coinName = name
+        // socket.on("coin name", (name) => {
+            coinName = "btcusdt"
             const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
-            if(connections === false) {
+            // if(connections === false) {
                 ws.onopen = () => {
                     connections = true
                     // if(ws.readyState > 0) {
@@ -82,36 +82,36 @@ async function getCriptoValue() {
                     data = JSON.parse(event.data)
                     // console.log(data.c)
                     // cryptoData = data.c
-                    io.emit('chat message', data);
+                    io.emit('coin', data);
                 }
-            } else {
-                ws.CLOSED
-                ws.onopen = () => {
-                    connections = true
-                    // if(ws.readyState > 0) {
-                    //     ws.CLOSED
-                    // } else {
-                        ws.send(JSON.stringify({
-                            "method": "SUBSCRIBE",
-                            "params": [
-                                `${coinName}@ticker`
-                            ],
-                            "id": 1
-                        }))
-                    // }
-                }
+            // } else {
+            //     ws.CLOSED
+            //     ws.onopen = () => {
+            //         connections = true
+            //         // if(ws.readyState > 0) {
+            //         //     ws.CLOSED
+            //         // } else {
+            //             ws.send(JSON.stringify({
+            //                 "method": "SUBSCRIBE",
+            //                 "params": [
+            //                     `${coinName}@ticker`
+            //                 ],
+            //                 "id": 1
+            //             }))
+            //         // }
+            //     }
 
-                ws.onmessage = (event) => {
-                    process.stdout.write("\033c")
-                    data = JSON.parse(event.data)
-                    // console.log(data.c)
-                    // cryptoData = data.c
-                    io.emit('chat message', data);
-                }
+            //     ws.onmessage = (event) => {
+            //         process.stdout.write("\033c")
+            //         data = JSON.parse(event.data)
+            //         // console.log(data.c)
+            //         // cryptoData = data.c
+            //         io.emit('chat message', data);
+            //     }
 
                 
-            }
-            console.log(name)
+            // }
+            // console.log(name)
             let data = [];
             // ws.close();
             // const account = await api.accountInfo();
@@ -133,7 +133,7 @@ async function getCriptoValue() {
             // console.log(ws.readyState)
 
             
-        })
+        // })
     })
     // console.log(data)
     // return data
