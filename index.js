@@ -17,6 +17,7 @@ const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
+const moment = require("moment");
 
 // const coinName = document.getElementById('coinName');
 
@@ -24,24 +25,24 @@ const goodBuy = process.env.GOOD_BUY;
 let cryptoData = "";
 
 app.get('/', (req, res) => {
-    res.sendFile('views/index.html', {root: __dirname, teste: "teste"})
+    res.sendFile('views/index.html', { root: __dirname, teste: "teste" })
 });
 
 app.get('/profile', (req, res) => {
-    res.sendFile('views/users-profile.html', {root: __dirname })
+    res.sendFile('views/users-profile.html', { root: __dirname })
 });
 
 app.get('/contact', (req, res) => {
-    res.sendFile('views/pages-contact.html', {root: __dirname })
+    res.sendFile('views/pages-contact.html', { root: __dirname })
 });
 
 app.get('/trading', async (req, res) => {
     try {
-// const result = await api.depth(symbol);
-        
+        // const result = await api.depth(symbol);
+
         getCriptoValue()
-        
-        res.sendFile('views/trading.html', {root: __dirname })
+
+        res.sendFile('views/trading.html', { root: __dirname })
     } catch (error) {
         console.log(error)
         res.send(error)
@@ -58,85 +59,31 @@ async function getCriptoValue() {
 
     io.on("connection", (socket) => {
         console.log("cliente conectado", socket.id)
-        // socket.on("coin name", (name) => {
-            coinName = "btcusdt"
-            const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
-            // if(connections === false) {
-                ws.onopen = () => {
-                    connections = true
-                    // if(ws.readyState > 0) {
-                    //     ws.CLOSED
-                    // } else {
-                        ws.send(JSON.stringify({
-                            "method": "SUBSCRIBE",
-                            "params": [
-                                `${coinName}@ticker`
-                            ],
-                            "id": 1
-                        }))
-                    // }
-                }
 
-                ws.onmessage = (event) => {
-                    process.stdout.write("\033c")
-                    data = JSON.parse(event.data)
-                    // console.log(data.c)
-                    // cryptoData = data.c
-                    io.emit('coin', data);
-                }
-            // } else {
-            //     ws.CLOSED
-            //     ws.onopen = () => {
-            //         connections = true
-            //         // if(ws.readyState > 0) {
-            //         //     ws.CLOSED
-            //         // } else {
-            //             ws.send(JSON.stringify({
-            //                 "method": "SUBSCRIBE",
-            //                 "params": [
-            //                     `${coinName}@ticker`
-            //                 ],
-            //                 "id": 1
-            //             }))
-            //         // }
-            //     }
+        coinName = "btcusdt"
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
 
-            //     ws.onmessage = (event) => {
-            //         process.stdout.write("\033c")
-            //         data = JSON.parse(event.data)
-            //         // console.log(data.c)
-            //         // cryptoData = data.c
-            //         io.emit('chat message', data);
-            //     }
+        ws.onopen = () => {
+            connections = true
+            ws.send(JSON.stringify({
+                "method": "SUBSCRIBE",
+                "params": [
+                    `${coinName}@ticker`
+                ],
+                "id": 1
+            }));
+        }
 
-                
-            // }
-            // console.log(name)
-            let data = [];
-            // ws.close();
-            // const account = await api.accountInfo();
-            console.log(ws.readyState)
-            // ws.onopen = () => {
-            //     connections = true
-            //     // if(ws.readyState > 0) {
-            //     //     ws.CLOSED
-            //     // } else {
-            //         ws.send(JSON.stringify({
-            //             "method": "SUBSCRIBE",
-            //             "params": [
-            //                 `${coinName}@ticker`
-            //             ],
-            //             "id": 1
-            //         }))
-            //     // }
-            // }
-            // console.log(ws.readyState)
+        let num = 0;
 
-            
-        // })
+        ws.onmessage = (event) => {
+            process.stdout.write("\033c")
+            data = JSON.parse(event.data)
+            num += 1
+            data.time = num
+            io.emit('coin', data);
+        }
     })
-    // console.log(data)
-    // return data
 }
 
 const teste = getCriptoValue()
