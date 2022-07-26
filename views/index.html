@@ -15,7 +15,9 @@
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -236,7 +238,7 @@
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
-      </li><!-- End Profile Page Nav -->      
+      </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/contact">
@@ -329,7 +331,8 @@
                     </div>
                     <div class="ps-3">
                       <h6 id="atualValue"></h6>
-                      <span class="text-success small pt-1 fw-bold" id="percentual"></span> <span class="text-muted small pt-2 ps-1"></span>
+                      <span class="text-success small pt-1 fw-bold" id="percentual"></span> <span
+                        class="text-muted small pt-2 ps-1"></span>
 
                     </div>
                   </div>
@@ -365,7 +368,8 @@
                     </div>
                     <div class="ps-3">
                       <h6>1244</h6>
-                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+                      <span class="text-danger small pt-1 fw-bold">12%</span> <span
+                        class="text-muted small pt-2 ps-1">decrease</span>
 
                     </div>
                   </div>
@@ -398,64 +402,112 @@
                   <!-- Line Chart -->
 
                   <!-- <div id="reportsChart"></div> -->
-                <section>
-                  <div id="loader" class="loader">
-                    Loading...
-                  </div>
-                  <canvas id="weatherChart">
-                  </canvas>
-                </section>
-                <!-- End Line Chart -->
-                
+                  <section>
+                    <div id="loader" class="loader">
+                      Loading...
+                    </div>
+                    <canvas id="weatherChart">
+                    </canvas>
+                  </section>
+
+
+                  
+                  
+                  <!-- End Line Chart -->
+                  
+                </div>
+                <!-- <canvas id="myChart" width="400" height="400"></canvas> -->
+
               </div>
-              
-            </div>
-          </div><!-- End Reports -->
-          
-        </div>
-      </div><!-- End Left side columns -->
-      
-      <!-- Right side columns -->
-      <div class="col-lg-4">
-        
-        
-      </div><!-- End Right side columns -->
+            </div><!-- End Reports -->
 
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+
+        </div><!-- End Right side columns -->
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      2022 &copy; Copyright <strong><span>Julián Boetto</span></strong>. All Rights Reserved
     </div>
-  </section>
-  
-</main><!-- End #main -->
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      Designed by <a href="https://github.com/JulianBoetto">Julián Boetto.</a>
+      Licensing information: <a href="https://bootstrapmade.com/license/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
 
-<!-- ======= Footer ======= -->
-<footer id="footer" class="footer">
-  <div class="copyright">
-    2022 &copy; Copyright <strong><span>Julián Boetto</span></strong>. All Rights Reserved
-  </div>
-  <div class="credits">
-    <!-- All the links in the footer should remain intact. -->
-    <!-- You can delete the links only if you purchased the pro version. -->
-    Designed by <a href="https://github.com/JulianBoetto">Julián Boetto.</a>
-    Licensing information: <a href="https://bootstrapmade.com/license/">BootstrapMade</a>
-  </div>
-</footer><!-- End Footer -->
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
 
-<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <!-- Vendor JS Files -->
+  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/chart.js/chart.min.js"></script>
+  <script src="../assets/vendor/echarts/echarts.min.js"></script>
+  <script src="../assets/vendor/quill/quill.min.js"></script>
+  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
 
-<!-- Vendor JS Files -->
-<script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../assets/vendor/chart.js/chart.min.js"></script>
-<script src="../assets/vendor/echarts/echarts.min.js"></script>
-<script src="../assets/vendor/quill/quill.min.js"></script>
-<script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
-<script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <!-- Template Main JS File -->
+  <script src="../assets/js/main.js"></script>
 
-<!-- Template Main JS File -->
-<script src="../assets/js/main.js"></script>
+  <!-- Template Graph JS File -->
+  <script src="../assets/js/graph.js"></script>
 
-<!-- GRAFICO -->
-<script src="https://js.pusher.com/4.0/pusher.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+  <!-- GRAFICO -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+  <!-- <script src="../public/assets/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script> -->
+
+
+  <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
 
 
 </body>
