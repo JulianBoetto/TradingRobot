@@ -840,6 +840,10 @@ h6 {
   background: #ffecdf;
 }
 
+#coinName {
+  font-size: 23px;
+}
+
 /* Activity */
 .dashboard .activity {
   font-size: 14px;

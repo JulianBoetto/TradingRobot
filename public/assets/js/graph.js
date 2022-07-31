@@ -7,7 +7,8 @@ const percentual = document.getElementById('percentual');
 const coinNameElement = document.getElementById('coinName');
 const ctx = document.getElementById("coinChart").getContext("2d");
 document.getElementById("coinChart").style.display = 'none';
-
+const spinner = document.getElementById("spinner");
+spinner.style.display =  'none';
 
 let coinName = "";
 let connections = 0;
@@ -15,12 +16,10 @@ let connections = 0;
 
 function showEle(elementId) {
   document.getElementById(elementId).style.display = 'flex';
-  document.getElementById("coinChart").style.display = 'none';
 }
 
 function hideEle(elementId) {
   document.getElementById(elementId).style.display = 'none';
-  document.getElementById("coinChart").style.display = 'flex';
 }
 
 var options = {
@@ -72,28 +71,26 @@ const coinChartRef = new Chart(ctx, {
   options: options
 });
 
-
-
 let ws;
-function onFetchTempSuccess() {
+function onConnectWS() {
   let num;
 
   if (connections && ws.readyState === 1) {
     ws.close()
-    // console.log(connections, ws)
-
+    coinChartRef.data.labels = [];
+    coinChartRef.data.datasets[0].data = [];
+    coinNameElement.innerHTML = "";
+    atualValue.innerHTML = "";
+    percentual.innerHTML = "";
+    showEle("spinner");
+    hideEle("coinChart");
+    coinChartRef.update();
     ws.onclose = (event) => {
       if (event.wasClean) {
         alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
       } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
-        coinChartRef.data.labels = [];
-        coinChartRef.data.datasets[0].data = [];
-        coinChartRef.update();
-        return onFetchTempSuccess()
+        return onConnectWS()
       }
-      // console.log(event, ws)
     }
 
 
@@ -110,20 +107,33 @@ function onFetchTempSuccess() {
     };
 
 
-    let num = 0;
+    num = 0;
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
       if (data.c) {
         connections = 1;
-        hideEle("loader");
         num += 1
         data.time = num
-        coinChartRef.data.labels.push(num);
-        coinChartRef.data.datasets[0].data.push(Number(data.c));
-        coinChartRef.update();
+        if(coinChartRef.data.labels.length - 1 >= 30) {
+          coinChartRef.data.labels.shift();
+          coinChartRef.data.datasets[0].data.shift();
+          coinChartRef.data.labels.push(num);
+          coinChartRef.data.datasets[0].data.push(Number(data.c));
+          coinChartRef.update();
+        } else {
+          coinChartRef.data.labels.push(num);
+          coinChartRef.data.datasets[0].data.push(Number(data.c));
+          coinChartRef.update();
+          showEle("coinChart");
+          hideEle("spinner");
+        }
         coinNameElement.innerHTML = data.s
-        atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        if(data.c < 10) {
+          atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" , minimumFractionDigits: 6});
+        } else {
+          atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        }
         if (data.p < 0) {
           percentual.classList.remove("text-success");
           percentual.classList.add("text-danger");
@@ -134,17 +144,6 @@ function onFetchTempSuccess() {
         percentual.innerHTML = `${data.P} %`
       }
     }
-
-
-    // ws.onclose = function (event) {
-    //   if (event.wasClean) {
-    //     alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-    //   } else {
-    //     // e.g. server process killed or network down
-    //     // event.code is usually 1006 in this case
-    //     alert('[close] Connection died');
-    //   }
-    // }
 
     ws.onerror = function (event) {
       console.log(event)
@@ -158,8 +157,9 @@ function getCoinName(event) {
   event.preventDefault()
   if (coinName !== form.query.value) {
     coinName = form.query.value
-    showEle("loader");
-    onFetchTempSuccess();
+    hideEle("loader");
+    showEle("spinner");
+    onConnectWS();
   }
 }
 
