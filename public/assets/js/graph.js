@@ -1,21 +1,28 @@
 const form = document.getElementById('searchForm');
+const searchButton = document.getElementById('searchButton');
 const input = document.getElementById('input');
 
 const atualValue = document.getElementById('atualValue');
 const percentual = document.getElementById('percentual');
 const coinNameElement = document.getElementById('coinName');
+const ctx = document.getElementById("coinChart").getContext("2d");
+document.getElementById("coinChart").style.display = 'none';
 
-let coinName = "btcusdt";
+
+let coinName = "";
+let connections = 0;
+
 
 function showEle(elementId) {
   document.getElementById(elementId).style.display = 'flex';
+  document.getElementById("coinChart").style.display = 'none';
 }
 
 function hideEle(elementId) {
   document.getElementById(elementId).style.display = 'none';
+  document.getElementById("coinChart").style.display = 'flex';
 }
 
-var ctx = document.getElementById("weatherChart").getContext("2d");
 var options = {
   plugins: {
     autocolors: false,
@@ -35,7 +42,7 @@ var options = {
   }
 };
 
-const weatherChartRef = new Chart(ctx, {
+const coinChartRef = new Chart(ctx, {
   type: "line",
   data: {
     labels: [],
@@ -65,46 +72,95 @@ const weatherChartRef = new Chart(ctx, {
   options: options
 });
 
+
+
+let ws;
 function onFetchTempSuccess() {
-  const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+  let num;
 
-  ws.onopen = () => {
-    ws.send(JSON.stringify({
-      "method": "SUBSCRIBE",
-      "params": [
-        `${coinName}@ticker`
-      ],
-      "id": 1
-    }));
-  }
+  if (connections && ws.readyState === 1) {
+    ws.close()
+    // console.log(connections, ws)
 
-  let num = 0;
-
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data)
-    if(data.c) {
-      console.log(data)
-      hideEle("loader");
-      num += 1
-      data.time = num
-      weatherChartRef.data.labels.push(num);
-      weatherChartRef.data.datasets[0].data.push(Number(data.c));
-      weatherChartRef.update();
-      coinNameElement.innerHTML = data.s
-      atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
-      if (data.p < 0) {
-        percentual.classList.remove("text-success");
-        percentual.classList.add("text-danger");
+    ws.onclose = (event) => {
+      if (event.wasClean) {
+        alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
       } else {
-        percentual.classList.remove("text-danger");
-        percentual.classList.add("text-success");
+        // e.g. server process killed or network down
+        // event.code is usually 1006 in this case
+        coinChartRef.data.labels = [];
+        coinChartRef.data.datasets[0].data = [];
+        coinChartRef.update();
+        return onFetchTempSuccess()
       }
-      percentual.innerHTML = `${data.P} %`
+      // console.log(event, ws)
     }
+
+
+  } else {
+    ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        "method": "SUBSCRIBE",
+        "params": [
+          `${coinName}@ticker`
+        ],
+        "id": 1
+      }));
+    };
+
+
+    let num = 0;
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.c) {
+        connections = 1;
+        hideEle("loader");
+        num += 1
+        data.time = num
+        coinChartRef.data.labels.push(num);
+        coinChartRef.data.datasets[0].data.push(Number(data.c));
+        coinChartRef.update();
+        coinNameElement.innerHTML = data.s
+        atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        if (data.p < 0) {
+          percentual.classList.remove("text-success");
+          percentual.classList.add("text-danger");
+        } else {
+          percentual.classList.remove("text-danger");
+          percentual.classList.add("text-success");
+        }
+        percentual.innerHTML = `${data.P} %`
+      }
+    }
+
+
+    // ws.onclose = function (event) {
+    //   if (event.wasClean) {
+    //     alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    //   } else {
+    //     // e.g. server process killed or network down
+    //     // event.code is usually 1006 in this case
+    //     alert('[close] Connection died');
+    //   }
+    // }
+
+    ws.onerror = function (event) {
+      console.log(event)
+      alert(`[error] ${error.message}`);
+    };
   }
 }
 
-(
-  showEle("loader"),
-  onFetchTempSuccess
-())
+
+function getCoinName(event) {
+  event.preventDefault()
+  if (coinName !== form.query.value) {
+    coinName = form.query.value
+    showEle("loader");
+    onFetchTempSuccess();
+  }
+}
+
+form.addEventListener("submit", (event) => getCoinName(event))

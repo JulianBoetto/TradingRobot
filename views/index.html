@@ -52,12 +52,12 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <!-- <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="GET" action="" id="searchForm">
-        <input type="text" name="query" placeholder="Search coin" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+    <div class="search-bar form-validation">
+      <form class="search-form d-flex align-items-center" method="POST" action="" id="searchForm">
+        <input type="text" name="query" placeholder="Search coin" title="Enter search keyword" required>
+        <button type="submit" id="searchButton" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div> -->
+    </div>
     <!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
@@ -406,15 +406,15 @@
                     <div id="loader" class="loader">
                       Loading...
                     </div>
-                    <canvas id="weatherChart">
+                    <canvas id="coinChart">
                     </canvas>
                   </section>
 
 
-                  
-                  
+
+
                   <!-- End Line Chart -->
-                  
+
                 </div>
                 <!-- <canvas id="myChart" width="400" height="400"></canvas> -->
 
@@ -456,9 +456,9 @@
   <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/vendor/chart.js/chart.min.js"></script>
   <script src="../assets/vendor/echarts/echarts.min.js"></script>
-  <script src="../assets/vendor/quill/quill.min.js"></script>
-  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <!-- <script src="../assets/vendor/quill/quill.min.js"></script> -->
+  <!-- <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script> -->
+  <!-- <script src="../assets/vendor/tinymce/tinymce.min.js"></script> -->
 
   <!-- Template Main JS File -->
   <script src="../assets/js/main.js"></script>
@@ -471,9 +471,9 @@
   <!-- <script src="../public/assets/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script> -->
 
 
-  <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
-    const myChart = new Chart(ctx, {
+  <!-- <script>
+    const ctx2 = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx2, {
       type: 'bar',
       data: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -507,7 +507,7 @@
         }
       }
     });
-  </script>
+  </script> -->
 
 
 </body>

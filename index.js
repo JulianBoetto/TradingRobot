@@ -6,7 +6,7 @@ const app = express(json);
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'jade');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
@@ -35,4 +35,4 @@ app.get('/trading', async (req, res) => {
 });
 
 
-app.listen(process.env.PORT || PORT, () => console.log(`Server run in port: ${process.env.PORT || PORT}`))
+app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`))
