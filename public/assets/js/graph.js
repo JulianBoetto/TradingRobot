@@ -9,7 +9,7 @@ const ctx = document.getElementById("coinChart").getContext("2d");
 document.getElementById("coinChart").style.display = 'none';
 
 
-let coinName = "btcusdt";
+let coinName = "";
 let connections = 0;
 
 
@@ -76,6 +76,7 @@ const coinChartRef = new Chart(ctx, {
 
 let ws;
 function onFetchTempSuccess() {
+  let num;
 
   if (connections && ws.readyState === 1) {
     ws.close()
@@ -87,6 +88,9 @@ function onFetchTempSuccess() {
       } else {
         // e.g. server process killed or network down
         // event.code is usually 1006 in this case
+        coinChartRef.data.labels = [];
+        coinChartRef.data.datasets[0].data = [];
+        coinChartRef.update();
         return onFetchTempSuccess()
       }
       // console.log(event, ws)
@@ -109,7 +113,6 @@ function onFetchTempSuccess() {
     let num = 0;
 
     ws.onmessage = (event) => {
-      // console.log(event.data)
       const data = JSON.parse(event.data)
       if (data.c) {
         connections = 1;
@@ -153,9 +156,11 @@ function onFetchTempSuccess() {
 
 function getCoinName(event) {
   event.preventDefault()
-  coinName = form.query.value
-  showEle("loader");
-  if (coinName) onFetchTempSuccess()
+  if (coinName !== form.query.value) {
+    coinName = form.query.value
+    showEle("loader");
+    onFetchTempSuccess();
+  }
 }
 
 form.addEventListener("submit", (event) => getCoinName(event))
