@@ -80,20 +80,15 @@ function onFetchTempSuccess() {
 
   if (connections && ws.readyState === 1) {
     ws.close()
-    // console.log(connections, ws)
-
     ws.onclose = (event) => {
       if (event.wasClean) {
         alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
       } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
         coinChartRef.data.labels = [];
         coinChartRef.data.datasets[0].data = [];
         coinChartRef.update();
         return onFetchTempSuccess()
       }
-      // console.log(event, ws)
     }
 
 
@@ -110,7 +105,7 @@ function onFetchTempSuccess() {
     };
 
 
-    let num = 0;
+    num = 0;
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
@@ -123,7 +118,12 @@ function onFetchTempSuccess() {
         coinChartRef.data.datasets[0].data.push(Number(data.c));
         coinChartRef.update();
         coinNameElement.innerHTML = data.s
-        atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        console.log(data.c)
+        if(data.c < 10) {
+          atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" , minimumFractionDigits: 6});
+        } else {
+          atualValue.innerHTML = Number(data.c).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        }
         if (data.p < 0) {
           percentual.classList.remove("text-success");
           percentual.classList.add("text-danger");
@@ -134,17 +134,6 @@ function onFetchTempSuccess() {
         percentual.innerHTML = `${data.P} %`
       }
     }
-
-
-    // ws.onclose = function (event) {
-    //   if (event.wasClean) {
-    //     alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-    //   } else {
-    //     // e.g. server process killed or network down
-    //     // event.code is usually 1006 in this case
-    //     alert('[close] Connection died');
-    //   }
-    // }
 
     ws.onerror = function (event) {
       console.log(event)
