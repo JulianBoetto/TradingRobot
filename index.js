@@ -1,19 +1,18 @@
-import { join } from "path";
-import express, { json } from "express";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const api = require('./src/api');
+const path = require("path");
+const express = require("express");
+const { json } = require('express');
 const app = express(json);
-app.set('views', join(__dirname, 'views'));
-app.use(express.static('public'));
-app.set("view engine","jade");
+const moment = require('moment');
+let ejs = require('ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 const PORT = process.env.PORT || 3000;
 const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
-import { allOrders } from "./api.js"
 
 
 app.get('/', (req, res) => {
@@ -30,9 +29,14 @@ app.get('/contact', (req, res) => {
 
 app.get('/orders', async (req, res) => {
     try {
-        // const allOrdersData = await allOrders()
-        // console.log(allOrdersData)
-        res.sendFile('views/orders.html', { root: __dirname })
+        const orders = await api.allOrders();
+        // orders.forEach
+        orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
+        orders.sort((a, b) => {
+            return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
+        });
+        const html = await ejs.renderFile("views/orders.ejs", { orders: orders }, { async: true });
+        res.send(html)
     } catch (error) {
         console.log(error)
         res.send(error)

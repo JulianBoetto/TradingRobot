@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { createHmac } from 'crypto';
-import 'dotenv/config';
+const axios = require('axios');
+const crypto = require('crypto');
+require('dotenv').config();
 
 const apiUrl = process.env.API_URL
 const apiKey = process.env.API_KEY;
@@ -8,7 +8,7 @@ const apiSecret = process.env.SECRET_KEY;
 
 async function privateCall(path, data = {}, method = 'GET') {
     const timestamp = Date.now();
-    const signature = createHmac('sha256', apiSecret)
+    const signature = crypto.createHmac('sha256', apiSecret)
         .update(`${new URLSearchParams({ ...data, timestamp }).toString()}`)
         .digest('hex');
 
@@ -70,11 +70,8 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-export {
-    time,
-    depth,
-    exchangeInfo,
-    accountInfo,
-    newOrder,
-    allOrders
+function teste() {
+    return "teste"
 }
+
+module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, teste }

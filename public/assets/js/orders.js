@@ -1,5 +1,16 @@
-// import allOrders from "../../../api.js"
-const tableTitle = document.getElementById("tableTitle");
+const tableBody = document.getElementById("tableBody");
+
+console.log(tableBody.children)
+
+// async function getOrders() {
+//     const orders = await allOrders();
+//     console.log(orders, "teste")
+//     // console.log(teste())
+// }
+
+// getOrders()
+
+// console.log( getOrders(), "teste")
 
 
 // const allOrders = [

@@ -31,6 +31,7 @@
     <!-- Template Main CSS File -->
     <link href="../assets/css/style.css" rel="stylesheet">
 
+
     <!-- =======================================================
   * Template Name: NiceAdmin - v2.3.0
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -420,7 +421,7 @@
                                             </div>
                                             <!-- <div id="spinner" class="spinner-border" role="status"> -->
                                         </div>
-                                        <table class="table">
+                                        <table class="table table-striped table-hover table-sm">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">Date</th>
@@ -431,7 +432,36 @@
                                                     <th scope="col">Total</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="table-group-divider" id="tableTitle">
+                                            <tbody class="table-group-divider" id="tableBody">
+                                                <% orders.forEach((order, index)=>{ const total = Number(order.origQty) *
+                                                    Number(order.price); %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= order.formatTime %>
+                                                        </td>
+                                                        <td>
+                                                            <%= order.symbol %>
+                                                        </td>
+                                                        <% if(order.side !== "SELL") { %>
+                                                            <td style="color: #14690c;">
+                                                                <%= order.side %>
+                                                            </td>
+                                                        <% } else { %>
+                                                            <td style="color: #a81414;">
+                                                                <%= order.side %>
+                                                            </td>
+                                                        <% } %>
+                                                        <td>
+                                                            <%= Number(order.price.toLocaleString()) %>
+                                                        </td>
+                                                        <td>
+                                                            <%= Number(order.origQty).toLocaleString() %>
+                                                        </td>
+                                                        <td>
+                                                            <%= total.toLocaleString() %> USDT
+                                                        </td>
+                                                    </tr>
+                                                <% }) %>
                                             </tbody>
                                         </table>
                                 </div>
@@ -485,8 +515,8 @@
     <script src="../assets/js/main.js"></script>
 
     <!-- Template Orders JS File -->
-    <script src="../assets/js/orders.js" type="module"></script>
-    <!-- <script src="../orders"></script> -->
+    <!-- <script src="../assets/js/api.js"></script> -->
+    <script src="../assets/js/orders.js"></script>
 
 </body>
 
