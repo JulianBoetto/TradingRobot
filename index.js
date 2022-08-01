@@ -1,4 +1,5 @@
 const api = require('./src/api');
+// const { onConnectWS } = require("./src/websocket");
 const path = require("path");
 const express = require("express");
 const { json } = require('express');
@@ -13,6 +14,38 @@ const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 const goodBuy = process.env.GOOD_BUY;
+
+
+
+
+const WebSocket = require('ws');
+
+function onConnectWS(symbol) {
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            "method": "SUBSCRIBE",
+            "params": [
+                `${symbol}@ticker`
+            ],
+            "id": 1
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        if (data.c) {
+            console.log(data.c, data.s)
+        }
+    }
+
+    ws.onerror = (event) => {
+        console.log(event)
+        alert(`[error] ${error.message}`);
+    };
+
+}
 
 
 app.get('/', (req, res) => {
@@ -30,12 +63,12 @@ app.get('/contact', (req, res) => {
 app.get('/orders', async (req, res) => {
     try {
         const orders = await api.allOrders();
-        // orders.forEach
+        orders.forEach(order => onConnectWS((order.symbol).toLowerCase()));
         orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
         orders.sort((a, b) => {
             return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
         });
-        const html = await ejs.renderFile("views/orders.ejs", { orders: orders }, { async: true });
+        const html = await ejs.renderFile("views/orders.ejs", { orders: orders, coin: coin }, { async: true });
         res.send(html)
     } catch (error) {
         console.log(error)
