@@ -2,6 +2,7 @@ const api = require('./src/api');
 // const { onConnectWS } = require("./src/websocket");
 const path = require("path");
 const express = require("express");
+const WebSocket = require('ws');
 const { json } = require('express');
 const app = express(json);
 const moment = require('moment');
@@ -13,14 +14,14 @@ const PORT = process.env.PORT || 3000;
 const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
-const goodBuy = process.env.GOOD_BUY;
+
+// const tableBody = document.getElementById("tableBody");
+// console.log(tableBody)
+
+let coinData = "teste";
 
 
-
-
-const WebSocket = require('ws');
-
-function onConnectWS(symbol) {
+function onConnectWS(symbol, orders) {
     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
 
     ws.onopen = () => {
@@ -35,8 +36,11 @@ function onConnectWS(symbol) {
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data)
-        if (data.c) {
-            console.log(data.c, data.s)
+        const number = 1
+        if (data.c && data.s === orders[number].symbol) {
+            const value = Number(data.c) - Number(orders[number].price)
+            console.log(data.s, `Valor atual: ${value.toLocaleString()}`, data.c, orders[number].price )
+
         }
     }
 
@@ -49,7 +53,7 @@ function onConnectWS(symbol) {
 
 
 app.get('/', (req, res) => {
-    res.sendFile('views/index.html', { root: __dirname, teste: "teste" })
+    res.sendFile('views/index.html', { root: __dirname })
 });
 
 app.get('/profile', (req, res) => {
@@ -63,12 +67,12 @@ app.get('/contact', (req, res) => {
 app.get('/orders', async (req, res) => {
     try {
         const orders = await api.allOrders();
-        orders.forEach(order => onConnectWS((order.symbol).toLowerCase()));
+        orders.forEach(order => onConnectWS((order.symbol).toLowerCase(), orders));
         orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
         orders.sort((a, b) => {
             return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
         });
-        const html = await ejs.renderFile("views/orders.ejs", { orders: orders, coin: coin }, { async: true });
+        const html = await ejs.renderFile("views/orders.ejs", { orders: orders, coinData: coinData }, { async: true });
         res.send(html)
     } catch (error) {
         console.log(error)
