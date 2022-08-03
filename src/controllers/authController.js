@@ -1,4 +1,7 @@
 const Users = require("../models/users");
+const AccessToken = require("../models/accessToken");
+const bcrypt = require("bcrypt");
+const CryptoPass = require('../lib/password');
 
 class AuthController {
   async login({ email, password }) {
@@ -9,15 +12,16 @@ class AuthController {
 
     // const result = await user.save();
 
-    // const user = await User.findOne({ email }).select('+password');
+    const user = await Users.findOne({ email }).select('+password');
 
-    // if (!user) {
-    //     return res.status(400).send({ error: 'User not found' });
-    // }
+    if (!user) {
+      return { statusCode: 400, message: "User not found" };
+    }
 
-    // if (!await bcrypt.compare(password, user.password)) {
-    //     return res.status(400).send({ error: 'Invalid password' })
-    // }
+    if (!await bcrypt.compare(password, user.password)) {
+      return { statusCode: 400, message: 'Invalid email or password' }
+    }
+
 
     // user.password = undefined;
 
@@ -25,7 +29,7 @@ class AuthController {
     //     user,
     //     token: generateToken({ id: user.id })
     // })
-    
+
 
     // let user = await User.findByCrendentials(email, password);
     // if (!user.statusCode) {
@@ -33,6 +37,31 @@ class AuthController {
     //   return { access_token: accessToken };
     // }
     // return { statusCode: user.statusCode };
+  }
+
+  async register({ email, password }) {
+    try {
+      if (await Users.findOne({ email })) {
+        return { statusCode: 400, message: 'User already exists' }
+      }
+
+      let pass = CryptoPass.saltHashPassword(password);
+      let userPassword = { 
+        encryptedPassword: pass.passwordHash, 
+        passwordSalt: pass.salt
+      };
+
+
+      const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
+
+      user.password = undefined;
+
+      const token = await generateToken({ id: user.id })
+
+      return { user, token };
+    } catch (err) {
+      return { statusCode: 400, message: `Registration failed: ${err}` }
+    }
   }
 }
 

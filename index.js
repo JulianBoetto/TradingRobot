@@ -9,11 +9,7 @@ const app = express(json);
 const moment = require('moment');
 const AuthController = require("./src/controllers/authController");
 const authController = new AuthController;
-let ejs = require('ejs');
-app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('view engine', 'ejs');
 app.use(require("cors")());
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -24,11 +20,6 @@ app.use(function (req, res, next) {
     next();
 });
 const PORT = process.env.PORT || 3002;
-const symbol = process.env.SYMBOL;
-const profitability = parseFloat(process.env.PROFITABILITY);
-const coin = process.env.COIN;
-
-let coinData = "teste";
 
 const appInstance = new App();
 
@@ -74,8 +65,13 @@ app.get('/', (req, res) => {
 });
 
 app.post("/auth", async (req, res) => {
-    const token = await authController.login(req.body)
-    res.status(200).send(token)
+    // const token = await authController.login(req.body)
+    const token = await authController.register(req.body)
+    if (token.statusCode) {
+        res.status(token.statusCode).send(token.message)
+    } else {
+        res.status(200).send(token)
+    };
 })
 
 app.get('/profile', (req, res) => {

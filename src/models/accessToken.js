@@ -1,21 +1,17 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    email: {
+const accessTockenSchema = new Schema({
+    userId: {
         type: String,
         required: true
     },
-    password: {
-        type: String,
-        required: true
-    },
-    salt: {
+    authorizationToken: {
         type: String,
         required: true
     }
 }, { timestamps: true });
 
-const Users = mongoose.model("Users", userSchema)
+const AccessToken = mongoose.model("AccessToken", accessTockenSchema)
 
-module.exports = Users;
+module.exports = AccessToken;
