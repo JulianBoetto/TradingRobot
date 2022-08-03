@@ -1,5 +1,5 @@
 const api = require('./src/api');
-// const { onConnectWS } = require("./src/websocket");
+const App = require("./app");
 const path = require("path");
 const express = require("express");
 const bodyParser = require('body-parser');
@@ -28,10 +28,15 @@ const symbol = process.env.SYMBOL;
 const profitability = parseFloat(process.env.PROFITABILITY);
 const coin = process.env.COIN;
 
-// const tableBody = document.getElementById("tableBody");
-// console.log(tableBody)
-
 let coinData = "teste";
+
+const main = async () => {
+  const appInstance = new App();
+  await appInstance.readyDB();
+  appInstance.listen();
+}
+
+main();
 
 
 function onConnectWS(symbol, orders) {
@@ -97,6 +102,5 @@ app.get('/orders', async (req, res) => {
         res.send(error)
     }
 });
-
 
 app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`))
