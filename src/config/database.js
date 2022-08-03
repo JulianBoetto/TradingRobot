@@ -1,29 +1,20 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require("mongoose");
 
 const username = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const cluster = process.env.DB_CLUSTER;
+const database = process.env.DB_NAME
 
 
 
-let uri = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
-
-const client = new MongoClient(uri);
+let uri = `mongodb+srv://${username}:${password}@${cluster}/${database}?retryWrites=true&w=majority`;
 
 async function connectDB() {
-    try {
-        await client.connect();
-    
-        const database = client.db("teste");
-        const filmes_db = database.collection("filmes");
-
-        const filmes = filmes_db.find({}); 
-
-        await filmes.forEach(doc => console.dir(doc));
-    } 
-    finally {
-        await client.close();
-    }
-}
+    mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => {
+            console.log("Database is connected!")
+        })
+        .catch((error) => console.log(error))
+};
 
 module.exports = connectDB

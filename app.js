@@ -4,15 +4,14 @@ const database = require('./src/config/database');
 class App {
     async readyDB() {
         try {
-            const connection = await database();
-            return "Database is connected!"
+            return await database();
         } catch (error) {
             console.log(error)
         }
     }
 
     async listen() {
-        return `App starting in ${process.env.NODE_ENV} mode`;
+        return console.log(`App starting in ${process.env.NODE_ENV} mode`);
     }
 }
 

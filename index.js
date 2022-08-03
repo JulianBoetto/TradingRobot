@@ -16,12 +16,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(require("cors")());
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-//   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("X-Powered-By", "ZendServer 8.5.0,ASP.NET");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST");
+    //   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("X-Powered-By", "ZendServer 8.5.0,ASP.NET");
+    next();
 });
 const PORT = process.env.PORT || 3002;
 const symbol = process.env.SYMBOL;
@@ -30,13 +30,12 @@ const coin = process.env.COIN;
 
 let coinData = "teste";
 
-const main = async () => {
-  const appInstance = new App();
-  await appInstance.readyDB();
-  appInstance.listen();
-}
+const appInstance = new App();
 
-main();
+(async () => {
+    await appInstance.readyDB();
+    appInstance.listen();
+})()
 
 
 function onConnectWS(symbol, orders) {
@@ -57,7 +56,7 @@ function onConnectWS(symbol, orders) {
         const number = 1
         if (data.c && data.s === orders[number].symbol) {
             const value = Number(data.c) - Number(orders[number].price)
-            console.log(data.s, `Valor atual: ${value.toLocaleString()}`, data.c, orders[number].price )
+            console.log(data.s, `Valor atual: ${value.toLocaleString()}`, data.c, orders[number].price)
 
         }
     }
@@ -76,7 +75,7 @@ app.get('/', (req, res) => {
 
 app.post("/auth", async (req, res) => {
     const token = await authController.login(req.body)
-    res.status(200).send(email)
+    res.status(200).send(token)
 })
 
 app.get('/profile', (req, res) => {
@@ -103,4 +102,6 @@ app.get('/orders', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`))
+app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`));
+
+module.exports = appInstance
