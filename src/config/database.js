@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
 
-const username = process.env.DB_USER;
-const password = process.env.DB_PASSWORD;
-const cluster = process.env.DB_CLUSTER;
-const database = process.env.DB_NAME
-
-
-
-let uri = `mongodb+srv://${username}:${password}@${cluster}/${database}?retryWrites=true&w=majority`;
+let uri = process.env.DB_MONGO_URI;
 
 async function connectDB() {
     mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
