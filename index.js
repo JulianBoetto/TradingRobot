@@ -29,74 +29,83 @@ const appInstance = new App();
 })()
 
 
-function onConnectWS(symbol, orders) {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
+// function onConnectWS(symbol, orders) {
+//     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
 
-    ws.onopen = () => {
-        ws.send(JSON.stringify({
-            "method": "SUBSCRIBE",
-            "params": [
-                `${symbol}@ticker`
-            ],
-            "id": 1
-        }));
-    };
+//     ws.onopen = () => {
+//         ws.send(JSON.stringify({
+//             "method": "SUBSCRIBE",
+//             "params": [
+//                 `${symbol}@ticker`
+//             ],
+//             "id": 1
+//         }));
+//     };
 
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        const number = 1
-        if (data.c && data.s === orders[number].symbol) {
-            const value = Number(data.c) - Number(orders[number].price)
-            console.log(data.s, `Valor atual: ${value.toLocaleString()}`, data.c, orders[number].price)
+//     ws.onmessage = (event) => {
+//         const data = JSON.parse(event.data)
+//         const number = 1
+//         if (data.c && data.s === orders[number].symbol) {
+//             const value = Number(data.c) - Number(orders[number].price)
+//             console.log(data.s, `Valor atual: ${value.toLocaleString()}`, data.c, orders[number].price)
 
-        }
-    }
+//         }
+//     }
 
-    ws.onerror = (event) => {
-        console.log(event)
-        alert(`[error] ${error.message}`);
-    };
+//     ws.onerror = (event) => {
+//         console.log(event)
+//         alert(`[error] ${error.message}`);
+//     };
 
-}
+// }
 
 
 app.get('/', (req, res) => {
+    res.status(200).send("Server run!")
     // res.sendFile('views/index.html', { root: __dirname })
 });
 
 app.post("/auth", async (req, res) => {
-    // const token = await authController.login(req.body)
-    const token = await authController.register(req.body)
+    const token = await authController.login(req.body)
     if (token.statusCode) {
-        res.status(token.statusCode).send(token.message)
+        res.status(token.statusCode).send({error: token.message})
     } else {
         res.status(200).send(token)
     };
-})
-
-app.get('/profile', (req, res) => {
-    // res.sendFile('views/users-profile.html', { root: __dirname })
 });
 
-app.get('/contact', (req, res) => {
-    // res.sendFile('views/pages-contact.html', { root: __dirname })
-});
+// app.post("/register", async (req, res) => {
+//     const token = await authController.register(req.body)
+//     if (token.statusCode) {
+//         res.status(token.statusCode).send(token.message)
+//     } else {
+//         res.status(200).send(token)
+//     };
+// });
 
-app.get('/orders', async (req, res) => {
-    try {
-        const orders = await api.allOrders();
-        // orders.forEach(order => onConnectWS((order.symbol).toLowerCase(), orders));
-        orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
-        orders.sort((a, b) => {
-            return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
-        });
-        const html = await ejs.renderFile("views/orders.ejs", { orders: orders }, { async: true });
-        // res.send(html)
-    } catch (error) {
-        console.log(error)
-        res.send(error)
-    }
-});
+// app.get('/profile', (req, res) => {
+//     // res.sendFile('views/users-profile.html', { root: __dirname })
+// });
+
+// app.get('/contact', (req, res) => {
+//     // res.sendFile('views/pages-contact.html', { root: __dirname })
+// });
+
+// app.get('/orders', async (req, res) => {
+//     try {
+//         const orders = await api.allOrders();
+//         // orders.forEach(order => onConnectWS((order.symbol).toLowerCase(), orders));
+//         orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
+//         orders.sort((a, b) => {
+//             return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
+//         });
+//         const html = await ejs.renderFile("views/orders.ejs", { orders: orders }, { async: true });
+//         // res.send(html)
+//     } catch (error) {
+//         console.log(error)
+//         res.send(error)
+//     }
+// });
 
 app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`));
 

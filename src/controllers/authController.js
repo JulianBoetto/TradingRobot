@@ -2,41 +2,39 @@ const Users = require("../models/users");
 const AccessToken = require("../models/accessToken");
 const bcrypt = require("bcrypt");
 const CryptoPass = require('../lib/password');
+const jwt = require("jsonwebtoken");
+const secret = process.env.JWT_PRIVATE_KEY
 
 class AuthController {
   async login({ email, password }) {
-    // const user = new Users({
-    //   email,
-    //   password
-    // });
+    try {
+      const user = await Users.findOne({ email }).select('+password');
+      
+      if (!user) {
+        return { statusCode: 400, message: "User not found" };
+      }      
+      
+      if (!CryptoPass.validatePassword(password, user.password, user.salt)) {
+        return { statusCode: 400, message: 'Invalid email or password' }
+      }
+      
+      user.password = "";
 
-    // const result = await user.save();
+      let accessToken = await AccessToken.create({ userId: user.id, authorizationToken: 'placeholder' });
 
-    const user = await Users.findOne({ email }).select('+password');
+      let payload = {
+        accessTokenId: accessToken.id,
+        userId: accessToken.userId
+      };
+  
+      let token = jwt.sign({ payload }, secret);
+      accessToken.authorizationToken = token;
+      accessToken.save();
 
-    if (!user) {
-      return { statusCode: 400, message: "User not found" };
+      return { access_token: token };    
+    } catch (error) {
+      return { statusCode: 400, message: `Login failed: ${error}` }
     }
-
-    if (!await bcrypt.compare(password, user.password)) {
-      return { statusCode: 400, message: 'Invalid email or password' }
-    }
-
-
-    // user.password = undefined;
-
-    // res.send({
-    //     user,
-    //     token: generateToken({ id: user.id })
-    // })
-
-
-    // let user = await User.findByCrendentials(email, password);
-    // if (!user.statusCode) {
-    //   let accessToken = await AccessToken.login(this.app.jwt, user);
-    //   return { access_token: accessToken };
-    // }
-    // return { statusCode: user.statusCode };
   }
 
   async register({ email, password }) {
@@ -56,9 +54,7 @@ class AuthController {
 
       user.password = undefined;
 
-      const token = await generateToken({ id: user.id })
-
-      return { user, token };
+      return user
     } catch (err) {
       return { statusCode: 400, message: `Registration failed: ${err}` }
     }

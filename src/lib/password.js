@@ -22,5 +22,27 @@ function saltHashPassword(userpassword) {
     return sha512(userpassword, salt);
 }
 
+function generateToken(accessToken, userData) {
+    let payload = {
+        accessTokenId: accessToken.id,
+        userId: accessToken.userId,
+        roleId: userData.roleId,
+    };
 
-module.exports = { saltHashPassword, sha512 }
+    let token = jwt.sign({ payload });
+    accessToken.authorizationToken = token;
+    accessToken.save();
+    return token;
+}
+
+function validatePassword (password, userPassword, userSalt) {
+    try {
+        let cryptoPass = sha512(password, userSalt);
+        return userPassword === cryptoPass.passwordHash;        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+module.exports = { saltHashPassword, sha512, generateToken, validatePassword }
