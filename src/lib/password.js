@@ -1,5 +1,6 @@
 'use strict';
-const crypto = require('crypto');//
+const crypto = require('crypto');
+const AuthController = require("../../src/controllers/authController");
 
 const genRandomString = function (length) {
     return crypto.randomBytes(Math.ceil(length / 2))
@@ -35,14 +36,30 @@ function generateToken(accessToken, userData) {
     return token;
 }
 
-function validatePassword (password, userPassword, userSalt) {
+function validatePassword(password, userPassword, userSalt) {
     try {
         let cryptoPass = sha512(password, userSalt);
-        return userPassword === cryptoPass.passwordHash;        
+        return userPassword === cryptoPass.passwordHash;
     } catch (error) {
         console.log(error)
     }
 }
 
+async function validateToken(request) {
 
-module.exports = { saltHashPassword, sha512, generateToken, validatePassword }
+    try {
+        await request.jwtVerify()
+        const accessToken = await AuthController.getFromJWT(request.user);
+        if (!accessToken) {
+            throw new Unauthorized();
+        }
+        request.accessToken = accessToken
+        request.currentUser = await accessToken.getUser();
+    } catch (err) {
+        server.log.error(err);
+        throw new Unauthorized();
+    }
+}
+
+
+module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken }

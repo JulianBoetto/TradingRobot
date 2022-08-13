@@ -58,7 +58,12 @@ class AuthController {
     } catch (err) {
       return { statusCode: 400, message: `Registration failed: ${err}` }
     }
+  };
+
+  async getFromJWT (jwt) {
+    return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
   }
+
 }
 
 module.exports = AuthController;

@@ -9,6 +9,7 @@ const app = express(json);
 const moment = require('moment');
 const AuthController = require("./src/controllers/authController");
 const authController = new AuthController;
+const validateToken = require("./src/lib/password");
 app.use(bodyParser.json());
 app.use(require("cors")());
 app.use(function (req, res, next) {
@@ -91,21 +92,18 @@ app.post("/auth", async (req, res) => {
 //     // res.sendFile('views/pages-contact.html', { root: __dirname })
 // });
 
-// app.get('/orders', async (req, res) => {
-//     try {
-//         const orders = await api.allOrders();
-//         // orders.forEach(order => onConnectWS((order.symbol).toLowerCase(), orders));
-//         orders.map(order => order.formatTime = moment(order.time).format("DD/MM/YYYY"))
-//         orders.sort((a, b) => {
-//             return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
-//         });
-//         const html = await ejs.renderFile("views/orders.ejs", { orders: orders }, { async: true });
-//         // res.send(html)
-//     } catch (error) {
-//         console.log(error)
-//         res.send(error)
-//     }
-// });
+app.post('/orders', async (req, res) => {
+    try {
+        const orders = await api.allOrders();
+        orders.map(order => {order.formatTime = moment(order.time).format("DD/MM/YYYY"), order.total = parseFloat((Number(order.price) * Number(order.origQty)).toFixed(5))})
+        orders.sort((a, b) => {
+            return moment(b.formatTime, "DD/MM/YYYY") - moment(a.formatTime, "DD/MM/YYYY")
+        });
+        res.status(200).send(orders)
+    } catch (error) {
+        res.status(401).send(error)
+    }   
+});
 
 app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`));
 

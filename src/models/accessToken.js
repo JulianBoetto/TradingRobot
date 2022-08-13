@@ -12,6 +12,6 @@ const accessTockenSchema = new Schema({
     }
 }, { timestamps: true });
 
-const AccessToken = mongoose.model("AccessToken", accessTockenSchema)
+const AccessToken = mongoose.model("AccessToken", accessTockenSchema);
 
 module.exports = AccessToken;
