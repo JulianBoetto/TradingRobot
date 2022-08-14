@@ -45,6 +45,14 @@ async function allOrders() {
     return privateCall('/v3/openOrders')
 }
 
+async function allTrades(symbol, limit = 10) {
+    return privateCall('/v3/myTrades', { symbol })
+}
+
+async function priceTicker(symbol) {
+    return publicCall('/v3/ticker/price', { symbol })
+}
+
 async function publicCall(path, data, method = 'GET') {
     try {
         const qs = data ? `?${new URLSearchParams(data).toString()}` : '';
@@ -70,8 +78,4 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-function teste() {
-    return "teste"
-}
-
-module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, teste }
+module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, priceTicker, allTrades }
