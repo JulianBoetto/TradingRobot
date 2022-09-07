@@ -4,6 +4,7 @@ const AuthController = require("../../src/controllers/authController");
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_PRIVATE_KEY;
+const blockList = [];
 
 const genRandomString = function (length) {
     return crypto.randomBytes(Math.ceil(length / 2))
@@ -65,12 +66,22 @@ async function validateToken(request) {
 
 async function verifyToken(req, res, next) {
     const token = req.headers["x-access-token"];
+    const index = blockList.findIndex(token);
+    if(index !== -1) return res.status(401).end();
+
     jwt.verify(token, secret, (err, decode) => {
-        if(err) return res.status(401).end();
-        
+        if (err) return res.status(401).end();
+
         req.userId = decode.userId;
+        next();
     })
 }
 
+async function logout(req, res, next) {
+    const token = req.headers["x-access-token"];
+    blockList.push(token);
+    res.status(200).send("Closed session")
+}
 
-module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken, verifyToken }
+
+module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken, verifyToken, logout }

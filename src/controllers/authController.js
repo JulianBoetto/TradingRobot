@@ -7,31 +7,33 @@ const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_PRIVATE_KEY;
 const userEmail = process.env.USER_NAME;
 const userPassword = process.env.USER_PASSWORD;
+const blockList = [];
 
 class AuthController {
-  async login(body) {
+  async login(req, res) {
+    const { email, password } = req.body
     try {
-      const user = body.email === userEmail && body.password === userPassword;
-      
-      if (!user) {
-        return { statusCode: 400, message: "User not found" };
-      }      
+      const user = email === userEmail && password === userPassword;
 
-      let payload = {
+      if (!user) {
+        res.status(400).send("User or password incorrect");
+      }
+
+      const payload = {
         userId: 1,
-        email: body.email,
+        email: email,
         date: new Date()
       };
 
-      let options = {
+      const options = {
         expiresIn: 300 //segundos
       }
-  
-      let token = jwt.sign({ payload }, secret, options);
 
-      return { access_token: token, auth: true };    
+      const token = jwt.sign(payload, secret, options);
+
+      res.status(200).send({ access_token: token, auth: true });
     } catch (error) {
-      return { statusCode: 401, message: `Not authorizated: ${error}` }
+      res.status(401).send("Not authorizated");
     }
   }
 
@@ -42,8 +44,8 @@ class AuthController {
       }
 
       let pass = CryptoPass.saltHashPassword(password);
-      let userPassword = { 
-        encryptedPassword: pass.passwordHash, 
+      let userPassword = {
+        encryptedPassword: pass.passwordHash,
         passwordSalt: pass.salt
       };
 
@@ -57,9 +59,10 @@ class AuthController {
     }
   };
 
-  async getFromJWT (jwt) {
+  async getFromJWT(jwt) {
     return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
   }
+
 
 
 
