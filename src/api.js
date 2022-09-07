@@ -78,4 +78,8 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, priceTicker, allTrades }
+async function klines(symbol, interval, limit = 60) {
+    return publicCall('/v3/klines', { symbol, interval, limit })
+}
+
+module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, priceTicker, allTrades, klines }

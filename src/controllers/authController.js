@@ -3,33 +3,25 @@ const AccessToken = require("../models/accessToken");
 const bcrypt = require("bcrypt");
 const CryptoPass = require('../lib/password');
 const jwt = require("jsonwebtoken");
-const secret = process.env.JWT_PRIVATE_KEY
+const secret = process.env.JWT_PRIVATE_KEY;
+const userEmail = process.env.USER_NAME;
+const userPassword = process.env.USER_PASSWORD;
 
 class AuthController {
-  async login({ email, password }) {
+  async login(body) {
     try {
-      const user = await Users.findOne({ email }).select('+password');
+      const user = body.email === userEmail && body.password === userPassword;
       
       if (!user) {
         return { statusCode: 400, message: "User not found" };
       }      
-      
-      if (!CryptoPass.validatePassword(password, user.password, user.salt)) {
-        return { statusCode: 400, message: 'Invalid email or password' }
-      }
-      
-      user.password = "";
-
-      let accessToken = await AccessToken.create({ userId: user.id, authorizationToken: 'placeholder' });
 
       let payload = {
-        accessTokenId: accessToken.id,
-        userId: accessToken.userId
+        email: body.email,
+        date: new Date()
       };
   
       let token = jwt.sign({ payload }, secret);
-      accessToken.authorizationToken = token;
-      accessToken.save();
 
       return { access_token: token };    
     } catch (error) {

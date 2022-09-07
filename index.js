@@ -12,12 +12,12 @@ const moment = require('moment');
 const AuthController = require("./src/controllers/authController");
 const authController = new AuthController;
 const validateToken = require("./src/lib/password");
+const Candle = require("./src/lib/candle");
 app.use(bodyParser.json());
 app.use(require("cors")());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  //   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header("X-Powered-By", "ZendServer 8.5.0,ASP.NET");
   next();
@@ -83,7 +83,7 @@ app.get('/orders', async (req, res) => {
 app.post('/order/:id', async (req, res) => {
   try {
     const symbol = req.params.id;
-    
+
     let historic = await api.allTrades(symbol);
     // historic.map(history => {
     //   let quoteQty = Number(history.quoteQty);
@@ -119,7 +119,7 @@ app.post('/historic-order/:id', async (req, res) => {
     const symbol = req.params.id;
     const { price, origQty } = req.body;
     let totalValue = 0;
-    let totalQty= 0;
+    let totalQty = 0;
     let historic = await api.allTrades(symbol);
     historic.map(history => {
       let quoteQty = Number(history.quoteQty);
@@ -149,6 +149,21 @@ app.post('/historic-order/:id', async (req, res) => {
     res.status(401).send(error);
   }
 });
+
+app.post("/klines", async (req, res) => {
+  const { symbol, interval } = req.body;
+
+  try {
+    const klines = await api.klines(symbol, interval);
+    const formatedKlines = klines.map(k => {
+      return new Candle(k[0], k[1], k[2], k[3], k[4]);
+    })
+    res.status(200).send(formatedKlines);
+  } catch (error) {
+    res.status(401).send(error);
+  }
+
+})
 
 
 
