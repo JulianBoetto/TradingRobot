@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_PRIVATE_KEY;
 const userEmail = process.env.USER_NAME;
 const userPassword = process.env.USER_PASSWORD;
-const blockList = [];
 
 class AuthController {
   async login(req, res) {
@@ -33,7 +32,7 @@ class AuthController {
 
       res.status(200).send({ access_token: token, auth: true });
     } catch (error) {
-      res.status(401).send("Not authorizated");
+      res.status(401).send("Unauthorized");
     }
   }
 

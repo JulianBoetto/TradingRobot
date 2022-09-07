@@ -66,11 +66,12 @@ async function validateToken(request) {
 
 async function verifyToken(req, res, next) {
     const token = req.headers["x-access-token"];
-    const index = blockList.findIndex(token);
+    if(!token) res.status(401).send("Unauthorized");
+    const index = blockList.findIndex(item => item === token);
     if(index !== -1) return res.status(401).end();
 
     jwt.verify(token, secret, (err, decode) => {
-        if (err) return res.status(401).end();
+        if (err) return res.status(401).send("Unauthorized").end();
 
         req.userId = decode.userId;
         next();
