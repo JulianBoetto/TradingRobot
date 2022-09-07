@@ -1,6 +1,9 @@
 'use strict';
 const crypto = require('crypto');
 const AuthController = require("../../src/controllers/authController");
+require('dotenv').config();
+const jwt = require("jsonwebtoken");
+const secret = process.env.JWT_PRIVATE_KEY;
 
 const genRandomString = function (length) {
     return crypto.randomBytes(Math.ceil(length / 2))
@@ -46,7 +49,6 @@ function validatePassword(password, userPassword, userSalt) {
 }
 
 async function validateToken(request) {
-
     try {
         await request.jwtVerify()
         const accessToken = await AuthController.getFromJWT(request.user);
@@ -61,5 +63,14 @@ async function validateToken(request) {
     }
 }
 
+async function verifyToken(req, res, next) {
+    const token = req.headers["x-access-token"];
+    jwt.verify(token, secret, (err, decode) => {
+        if(err) return res.status(401).end();
+        
+        req.userId = decode.userId;
+    })
+}
 
-module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken }
+
+module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken, verifyToken }

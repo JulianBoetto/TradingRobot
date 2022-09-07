@@ -2,6 +2,7 @@ const Users = require("../models/users");
 const AccessToken = require("../models/accessToken");
 const bcrypt = require("bcrypt");
 const CryptoPass = require('../lib/password');
+require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_PRIVATE_KEY;
 const userEmail = process.env.USER_NAME;
@@ -17,15 +18,20 @@ class AuthController {
       }      
 
       let payload = {
+        userId: 1,
         email: body.email,
         date: new Date()
       };
-  
-      let token = jwt.sign({ payload }, secret);
 
-      return { access_token: token };    
+      let options = {
+        expiresIn: 300 //segundos
+      }
+  
+      let token = jwt.sign({ payload }, secret, options);
+
+      return { access_token: token, auth: true };    
     } catch (error) {
-      return { statusCode: 400, message: `Login failed: ${error}` }
+      return { statusCode: 401, message: `Not authorizated: ${error}` }
     }
   }
 
@@ -41,7 +47,6 @@ class AuthController {
         passwordSalt: pass.salt
       };
 
-
       const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
 
       user.password = undefined;
@@ -55,6 +60,8 @@ class AuthController {
   async getFromJWT (jwt) {
     return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
   }
+
+
 
 }
 
