@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
-let uri = process.env.DB_MONGO_URI;
+// let uri = process.env.DB_MONGO_URI;
 
 async function connectDB() {
     // mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })

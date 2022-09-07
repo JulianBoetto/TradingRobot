@@ -1,4 +1,3 @@
-// const app = require("./index");
 const database = require('./src/config/database');
 
 class App {
