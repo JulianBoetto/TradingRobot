@@ -11,61 +11,90 @@ const userPassword = process.env.USER_PASSWORD;
 class AuthController {
   async login(req, res) {
     const { email, password } = req.body;
-    if(!email || !password) res.status(400).send("User or password incorrect")
+    if (!email || !password) res.status(400).send("User or password incorrect")
     try {
-      const user = email === userEmail && password === userPassword;
+      let user = await findByCrendentials(email, password);
 
       if (!user) {
-        res.status(400).send("User or password incorrect");
-      } else {
-        const payload = {
-          userId: 1,
-          email: email,
-          date: new Date()
-        };
-  
-        const options = {
-          expiresIn: 300 //segundos
-        }
-  
-        const token = jwt.sign(payload, secret, options);
-  
-        res.status(200).send({ access_token: token, auth: true });
-      }
-    } catch (error) {
-      res.status(401).send("Unauthorized");
-    }
-  }
-
-  async register({ email, password }) {
-    try {
-      if (await Users.findOne({ email })) {
-        return { statusCode: 400, message: 'User already exists' }
+        return res.status(400).send("User or password incorrect");
       }
 
-      let pass = CryptoPass.saltHashPassword(password);
-      let userPassword = {
-        encryptedPassword: pass.passwordHash,
-        passwordSalt: pass.salt
+      const passwordIsValid = await validatePassword(password, user.salt, user.password);
+
+      if (!passwordIsValid) {
+        return res.status(400).send("User or password incorrect")
+      }
+      const payload = {
+        userId: 1,
+        email: email,
+        date: new Date()
       };
 
-      const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
+      const options = {
+        expiresIn: 36000 //segundos
+      }
 
-      user.password = undefined;
+      const token = jwt.sign(payload, secret, options);
 
-      return user
-    } catch (err) {
-      return { statusCode: 400, message: `Registration failed: ${err}` }
+      res.status(200).send({ access_token: token, auth: true });
+    
+    } catch(error) {
+    res.status(401).send("Unauthorized");
+  }
+}
+
+  async register(req, res) {
+  if (!req.body) {
+    return res.status(400).send("Registration failed");
+  }
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).send("Registration failed");
+  }
+  try {
+    if (await Users.findOne({ email })) {
+      return res.status(400).send('User already exists')
     }
-  };
+
+    if (!password) {
+      return { statusCode: 400, message: `Registration failed` }
+    }
+    let pass = CryptoPass.saltHashPassword(password);
+    let userPassword = {
+      encryptedPassword: pass.passwordHash,
+      passwordSalt: pass.salt
+    };
+
+    const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
+
+    user.password = undefined;
+
+    return res.status(200).send(user)
+  } catch (err) {
+    return res.status(400).send("Registration failed")
+  }
+};
 
   async getFromJWT(jwt) {
-    return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
-  }
+  return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
+}
 
 
 
 
+}
+
+const findByCrendentials = async (email, password) => {
+  let user = await Users.findOne({ email });
+  if (!user) return res.status(404);
+
+  return user
+}
+
+const validatePassword = async (password, passwordSalt, encryptedPassword) => {
+  let cryptoPass = CryptoPass.sha512(password, passwordSalt);
+  return encryptedPassword === cryptoPass.passwordHash;
 }
 
 module.exports = AuthController;
