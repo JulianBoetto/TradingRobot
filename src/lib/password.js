@@ -1,6 +1,7 @@
 'use strict';
 const crypto = require('crypto');
-const AuthController = require("../../src/controllers/authController");
+const AuthController = require("../controllers/authController");
+const AccessToken = require("../models/accessToken")
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_PRIVATE_KEY;
@@ -49,34 +50,32 @@ function validatePassword(password, userPassword, userSalt) {
     }
 }
 
-async function validateToken(request) {
-    try {
-        await request.jwtVerify()
-        const accessToken = await AuthController.getFromJWT(request.user);
-        if (!accessToken) {
-            throw new Unauthorized();
-        }
-        request.accessToken = accessToken
-        request.currentUser = await accessToken.getUser();
-    } catch (err) {
-        server.log.error(err);
-        throw new Unauthorized();
-    }
-}
-
 async function verifyToken(req, res, next) {
-    const token = req.headers["x-access-token"];
-    if(!token) res.status(401).send("Unauthorized");
-    const index = blockList.findIndex(item => item === token);
-    if(index !== -1) return res.status(401).end();
+    let token = req.headers["authorization"];
+    if (!token) return res.status(401).send("Unauthorized").end();
+    try {
+        const parts = token.split(" ");
+        if (parts.length === 2) {
+            const scheme = parts[0]
+            token = parts[1]
 
-    jwt.verify(token, secret, (err, decode) => {
-        if (err) return res.status(401).send("Unauthorized").end();
+            if (!/^Bearer$/i.test(scheme)) {
+                return res.status(401).send("Unauthorized").end();
+            }
 
-        req.userId = decode.userId;
-        next();
-        
-    })
+            jwt.verify(token, secret);
+            const refreshToken = jwt.decode(token);
+            const session = await AccessToken.find({ _id: refreshToken.sessionId });
+            if (!session) return res.status(401).send("Unauthorized").end();
+
+            next();
+        } else {
+            return res.status(401).send("Unauthorized").end();
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(401).send("Unauthorized").end();
+    }
 }
 
 async function logout(req, res, next) {
@@ -86,4 +85,4 @@ async function logout(req, res, next) {
 }
 
 
-module.exports = { saltHashPassword, sha512, generateToken, validatePassword, validateToken, verifyToken, logout }
+module.exports = { saltHashPassword, sha512, generateToken, validatePassword, verifyToken, logout }

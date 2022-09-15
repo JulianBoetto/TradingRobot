@@ -24,61 +24,66 @@ class AuthController {
       if (!passwordIsValid) {
         return res.status(400).send("User or password incorrect")
       }
+
+      let refreshToken = await AccessToken.create({ userId: user.id, authorizationToken: 'placeholder' });
+
       const payload = {
-        userId: 1,
-        email: email,
-        date: new Date()
+        userId: user.id,
+        sessionId: refreshToken.id
       };
 
       const options = {
-        expiresIn: 36000 //segundos
+        expiresIn: 86400 //segundos
       }
 
       const token = jwt.sign(payload, secret, options);
+      const access_token = jwt.sign({ sessionId: refreshToken.id }, secret, { expiresIn: 1200 })
+      refreshToken.authorizationToken = token;
+      refreshToken.save();
 
-      res.status(200).send({ access_token: token, auth: true });
-    
-    } catch(error) {
-    res.status(401).send("Unauthorized");
+      res.status(200).send({ access_token, auth: true });
+
+    } catch (error) {
+      res.status(401).send("Unauthorized");
+    }
   }
-}
 
   async register(req, res) {
-  if (!req.body) {
-    return res.status(400).send("Registration failed");
-  }
-  const { email, password } = req.body
-
-  if (!email || !password) {
-    return res.status(400).send("Registration failed");
-  }
-  try {
-    if (await Users.findOne({ email })) {
-      return res.status(400).send('User already exists')
+    if (!req.body) {
+      return res.status(400).send("Registration failed");
     }
+    const { email, password } = req.body
 
-    if (!password) {
-      return { statusCode: 400, message: `Registration failed` }
+    if (!email || !password) {
+      return res.status(400).send("Registration failed");
     }
-    let pass = CryptoPass.saltHashPassword(password);
-    let userPassword = {
-      encryptedPassword: pass.passwordHash,
-      passwordSalt: pass.salt
-    };
+    try {
+      if (await Users.findOne({ email })) {
+        return res.status(400).send('User already exists')
+      }
 
-    const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
+      if (!password) {
+        return { statusCode: 400, message: `Registration failed` }
+      }
+      let pass = CryptoPass.saltHashPassword(password);
+      let userPassword = {
+        encryptedPassword: pass.passwordHash,
+        passwordSalt: pass.salt
+      };
 
-    user.password = undefined;
+      const user = await Users.create({ email, password: userPassword.encryptedPassword, salt: userPassword.passwordSalt });
 
-    return res.status(200).send(user)
-  } catch (err) {
-    return res.status(400).send("Registration failed")
-  }
-};
+      user.password = undefined;
+
+      return res.status(200).send(user)
+    } catch (err) {
+      return res.status(400).send("Registration failed")
+    }
+  };
 
   async getFromJWT(jwt) {
-  return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
-}
+    return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
+  }
 
 
 
