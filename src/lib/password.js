@@ -1,6 +1,5 @@
 'use strict';
 const crypto = require('crypto');
-const AuthController = require("../controllers/authController");
 const AccessToken = require("../models/accessToken")
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
@@ -28,25 +27,27 @@ function saltHashPassword(userpassword) {
     return sha512(userpassword, salt);
 }
 
-function generateToken(accessToken, userData) {
-    let payload = {
-        accessTokenId: accessToken.id,
-        userId: accessToken.userId,
-        roleId: userData.roleId,
+function generateToken(user, session) {
+    const payload = {
+        userId: user.id,
+        sessionId: session.id
     };
 
-    let token = jwt.sign({ payload });
-    accessToken.authorizationToken = token;
-    accessToken.save();
-    return token;
+    const options = {
+        expiresIn: 86400 //segundos
+    }
+
+    const refreshToken = jwt.sign(payload, secret, options);
+    const accessToken = jwt.sign({ sessionId: session.id }, secret, { expiresIn: 1200 })
+    return { refreshToken, accessToken };
 }
 
-function validatePassword(password, userPassword, userSalt) {
+function validatePassword(password, passwordSalt, encryptedPassword) {
     try {
-        let cryptoPass = sha512(password, userSalt);
-        return userPassword === cryptoPass.passwordHash;
+        let cryptoPass = sha512(password, passwordSalt);
+        return encryptedPassword === cryptoPass.passwordHash;
     } catch (error) {
-        console.log(error)
+        return false
     }
 }
 
@@ -66,14 +67,15 @@ async function verifyToken(req, res, next) {
             jwt.verify(token, secret);
             const refreshToken = jwt.decode(token);
             const session = await AccessToken.find({ _id: refreshToken.sessionId });
-            if (!session) return res.status(401).send("Unauthorized").end();
+            if (!session || !session.length) return res.status(401).send("Unauthorized").end();
+            // const user = jwt.decode(token);
+            // const generateToken(user, session);
 
             next();
         } else {
             return res.status(401).send("Unauthorized").end();
         }
     } catch (error) {
-        console.log(error)
         return res.status(401).send("Unauthorized").end();
     }
 }

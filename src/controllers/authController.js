@@ -1,12 +1,8 @@
 const Users = require("../models/users");
 const AccessToken = require("../models/accessToken");
-const bcrypt = require("bcrypt");
+const { generateToken, validatePassword } = require("../lib/password");
 const CryptoPass = require('../lib/password');
 require('dotenv').config();
-const jwt = require("jsonwebtoken");
-const secret = process.env.JWT_PRIVATE_KEY;
-const userEmail = process.env.USER_NAME;
-const userPassword = process.env.USER_PASSWORD;
 
 class AuthController {
   async login(req, res) {
@@ -19,29 +15,20 @@ class AuthController {
         return res.status(400).send("User or password incorrect");
       }
 
-      const passwordIsValid = await validatePassword(password, user.salt, user.password);
+      const passwordIsValid = validatePassword(password, user.salt, user.password);
 
       if (!passwordIsValid) {
         return res.status(400).send("User or password incorrect")
       }
 
-      let refreshToken = await AccessToken.create({ userId: user.id, authorizationToken: 'placeholder' });
+      let session = await AccessToken.create({ userId: user.id, authorizationToken: 'placeholder' });
 
-      const payload = {
-        userId: user.id,
-        sessionId: refreshToken.id
-      };
+      const { refreshToken, accessToken } = generateToken(user, session);
+     
+      session.authorizationToken = refreshToken;
+      session.save();
 
-      const options = {
-        expiresIn: 86400 //segundos
-      }
-
-      const token = jwt.sign(payload, secret, options);
-      const access_token = jwt.sign({ sessionId: refreshToken.id }, secret, { expiresIn: 1200 })
-      refreshToken.authorizationToken = token;
-      refreshToken.save();
-
-      res.status(200).send({ access_token, auth: true });
+      res.status(200).send({ access_token: accessToken, auth: true });
 
     } catch (error) {
       res.status(401).send("Unauthorized");
@@ -84,10 +71,6 @@ class AuthController {
   async getFromJWT(jwt) {
     return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
   }
-
-
-
-
 }
 
 const findByCrendentials = async (email, password) => {
@@ -95,11 +78,6 @@ const findByCrendentials = async (email, password) => {
   if (!user) return res.status(404);
 
   return user
-}
-
-const validatePassword = async (password, passwordSalt, encryptedPassword) => {
-  let cryptoPass = CryptoPass.sha512(password, passwordSalt);
-  return encryptedPassword === cryptoPass.passwordHash;
 }
 
 module.exports = AuthController;
