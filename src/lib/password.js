@@ -75,6 +75,7 @@ async function verifyToken(req, res, next) {
 
         req.userId = decode.userId;
         next();
+        
     })
 }
 

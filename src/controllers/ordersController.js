@@ -56,7 +56,7 @@ class OrdersController {
         }
     }
 
-    // router.post('/:id', async (req, res) => {
+    // async getOrder(req, res) {
     //     try {
     //         const symbol = req.params.id;
 
@@ -84,11 +84,11 @@ class OrdersController {
     //         // totalValue = parseFloat(totalValue.toFixed(5));
     //         // totalQty = parseFloat(totalQty.toFixed(5));
 
-    //         // res.status(200).send({ historic, totalValue, totalQty });
+    //         res.status(200).send({ historic, totalValue, totalQty });
     //     } catch (error) {
     //         res.status(401).send(error);
     //     }
-    // });
+    // };
 }
 
 module.exports = OrdersController;

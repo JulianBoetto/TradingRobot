@@ -10,27 +10,28 @@ const userPassword = process.env.USER_PASSWORD;
 
 class AuthController {
   async login(req, res) {
-    const { email, password } = req.body
+    const { email, password } = req.body;
+    if(!email || !password) res.status(400).send("User or password incorrect")
     try {
       const user = email === userEmail && password === userPassword;
 
       if (!user) {
         res.status(400).send("User or password incorrect");
+      } else {
+        const payload = {
+          userId: 1,
+          email: email,
+          date: new Date()
+        };
+  
+        const options = {
+          expiresIn: 300 //segundos
+        }
+  
+        const token = jwt.sign(payload, secret, options);
+  
+        res.status(200).send({ access_token: token, auth: true });
       }
-
-      const payload = {
-        userId: 1,
-        email: email,
-        date: new Date()
-      };
-
-      const options = {
-        expiresIn: 300 //segundos
-      }
-
-      const token = jwt.sign(payload, secret, options);
-
-      res.status(200).send({ access_token: token, auth: true });
     } catch (error) {
       res.status(401).send("Unauthorized");
     }
