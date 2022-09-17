@@ -80,11 +80,23 @@ async function verifyToken(req, res, next) {
     }
 }
 
+// recibe token, lo valida y devuelve el token nuevo
+// async funcion
+
+
+// REHACER LOGOUT PARA UTILIZAR REDIS COMO BLOCKLIST
 async function logout(req, res, next) {
-    const token = req.headers["x-access-token"];
-    blockList.push(token);
+    // const token = req.headers["x-access-token"];
+    // blockList.push(token);
     res.status(200).send("Closed session")
 }
 
 
-module.exports = { saltHashPassword, sha512, generateToken, validatePassword, verifyToken, logout }
+module.exports = {
+    saltHashPassword,
+    sha512,
+    generateToken,
+    validatePassword,
+    verifyToken,
+    logout
+}

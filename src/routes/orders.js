@@ -5,7 +5,7 @@ const { verifyToken } = require("../lib/password");
 const OrdersController = require("../controllers/ordersController");
 const ordersController = new OrdersController();
 
-router.get('/allOrders', verifyToken, ordersController.allOrders);
+router.post('/allOrders', verifyToken, ordersController.allOrders);
 router.post('/historic/:id', verifyToken, ordersController.historic);
 
 module.exports = router;

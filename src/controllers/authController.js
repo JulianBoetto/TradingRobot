@@ -71,6 +71,10 @@ class AuthController {
   async getFromJWT(jwt) {
     return await AccessToken.findOne({ where: { userId: jwt.payload.userId, id: jwt.payload.accessTokenId } });
   }
+
+  async validateAccess(req, res) {
+
+  }
 }
 
 const findByCrendentials = async (email, password) => {

@@ -10,7 +10,7 @@ const chart = require("./src/routes/chart");
 const cors = require("./src/config/cors")
 
 app.use(bodyParser.json());
-app.use(require("cors")());
+// app.use(require("cors")());
 app.use(cors);
 
 const PORT = process.env.PORT || 3002;
