@@ -53,6 +53,10 @@ async function priceTicker(symbol) {
     return publicCall('/v3/ticker/price', { symbol })
 }
 
+async function priceTicker24h(symbol) {
+    return publicCall('/v3/ticker/24hr', { symbol })
+}
+
 async function publicCall(path, data, method = 'GET') {
     try {
         const qs = data ? `?${new URLSearchParams(data).toString()}` : '';
@@ -62,7 +66,8 @@ async function publicCall(path, data, method = 'GET') {
         })
         return result.data
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        return
     }
 }
 
@@ -82,4 +87,4 @@ async function klines(symbol, interval, limit = 60) {
     return publicCall('/v3/klines', { symbol, interval, limit })
 }
 
-module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, priceTicker, allTrades, klines }
+module.exports = { time, depth, exchangeInfo, accountInfo, newOrder, allOrders, priceTicker, priceTicker24h, allTrades, klines }

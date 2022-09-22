@@ -8,6 +8,8 @@ const auth = require("./src/routes/auth");
 const order = require("./src/routes/orders");
 const chart = require("./src/routes/chart");
 const cors = require("./src/config/cors")
+const cron = require('node-cron');
+const message = require("./src/lib/messages");
 
 app.use(bodyParser.json());
 // app.use(require("cors")());
@@ -20,6 +22,10 @@ const appInstance = new App();
 (async () => {
   await appInstance.readyDB();
   appInstance.listen();
+
+  cron.schedule('1 * * * * *', () => {
+    message();
+  });
 })();
 
 app.use("/", router);

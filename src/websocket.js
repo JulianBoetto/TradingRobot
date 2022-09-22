@@ -14,15 +14,14 @@ function onConnectWS(symbol) {
     };
 
     ws.onmessage = (event) => {
-        console.log(event)
         const data = JSON.parse(event.data)
         if (data.c) {
-            console.log(data.c)
+            // console.log(data.c)
         }
     }
 
     ws.onerror = (event) => {
-        console.log(event)
+        // console.log(event)
         alert(`[error] ${error.message}`);
     };
 
