@@ -146,7 +146,6 @@ function onConnectWS() {
     }
 
     ws.onerror = function (event) {
-      console.log(event)
       alert(`[error] ${error.message}`);
     };
   }
