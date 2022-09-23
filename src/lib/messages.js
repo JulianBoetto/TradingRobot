@@ -1,19 +1,21 @@
 const accountSid = process.env.TWILIO_ID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+const Symbols = require("../models/symbols");
 const api = require("../api");
 
 
 async function message() {
-    const orders = await api.allOrders();
-    const getValue = order =>
+    const orders = await Symbols.find();
+    const getValue = symbol =>
         new Promise(resolve =>
-            resolve(api.priceTicker24h(order.symbol))
+            resolve(api.priceTicker24h(symbol))
         );
 
     const sendMessage = async () => {
-        await orders.forEach(async order => {
-            const historical = await getValue(order);
+        orders.forEach(async order => {
+            const symbol = `${order.symbol}${order.pair}`;
+            const historical = await getValue(symbol);
             if (historical) {
                 if (parseFloat(historical.priceChangePercent) >= 10) {
                     console.log(historical.symbol)
