@@ -16,6 +16,7 @@ async function message() {
             const historical = await getValue(order);
             if (historical) {
                 if (parseFloat(historical.priceChangePercent) >= 10) {
+                    console.log(historical.symbol)
                     client.messages
                         .create({
                             body: `${historical.symbol} subió un ${historical.priceChangePercent}%. Su precio actual es de u$d ${historical.weightedAvgPrice}`,

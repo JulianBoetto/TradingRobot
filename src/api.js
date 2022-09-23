@@ -66,8 +66,7 @@ async function publicCall(path, data, method = 'GET') {
         })
         return result.data
     } catch (error) {
-        // console.log(error)
-        return
+        console.log(error)
     }
 }
 
