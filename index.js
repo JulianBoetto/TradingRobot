@@ -24,7 +24,7 @@ const appInstance = new App();
   await appInstance.readyDB();
   appInstance.listen();
 
-  cron.schedule('1 * * * * *', () => {
+  cron.schedule('20 * * * * *', () => {
     message();
   });
 })();
