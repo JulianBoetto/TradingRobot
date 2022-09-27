@@ -9,6 +9,6 @@ router.post('/allSymbols',
 verifyToken, 
 symbolsController.allSymbols);
 router.post('/createSymbol', verifyToken, symbolsController.createSymbols);
-router.delete('/removeSymbol', verifyToken, symbolsController.removeSymbols);
+router.delete('/removeSymbol/:symbol/:pair', verifyToken, symbolsController.removeSymbols);
 
 module.exports = router;
