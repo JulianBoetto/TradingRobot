@@ -14,10 +14,10 @@ async function message() {
 
     const sendMessage = async () => {
         orders.forEach(async order => {
-            const symbol = `${order.symbol}${order.pair}`;
+            const symbol = await `${order.symbol}${order.pair}`;
             const historical = await getValue(symbol);
             if (historical) {
-                if (parseFloat(historical.priceChangePercent) >= 10) {
+                if (parseFloat(historical.priceChangePercent) >= 5) {
                     client.messages
                         .create({
                             body: `${historical.symbol} subió un ${historical.priceChangePercent}%. Su precio actual es de u$d ${historical.weightedAvgPrice}`,
