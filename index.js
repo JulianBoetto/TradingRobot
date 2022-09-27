@@ -7,6 +7,7 @@ const router = require("./src/routes/index");
 const auth = require("./src/routes/auth");
 const order = require("./src/routes/orders");
 const chart = require("./src/routes/chart");
+const symbol = require("./src/routes/symbols");
 const cors = require("./src/config/cors")
 const cron = require('node-cron');
 const message = require("./src/lib/messages");
@@ -32,6 +33,7 @@ app.use("/", router);
 app.use("/auth", auth);
 app.use("/order", order);
 app.use("/klines", chart);
+app.use("/symbols", symbol);
 
 app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`));
 
