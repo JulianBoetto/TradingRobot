@@ -1,19 +1,19 @@
 'use strict';
-const crypto = require('crypto');
-const AccessToken = require("../models/accessToken")
-require('dotenv').config();
-const jwt = require("jsonwebtoken");
+import { randomBytes, createHmac } from 'crypto';
+import AccessToken from "../models/accessToken.js";
+import "dotenv/config";
+import jwt from "jsonwebtoken";
 const secret = process.env.JWT_PRIVATE_KEY;
 const blockList = [];
 
 const genRandomString = function (length) {
-    return crypto.randomBytes(Math.ceil(length / 2))
+    return randomBytes(Math.ceil(length / 2))
         .toString('hex')
         .slice(0, length);
 };
 
 const sha512 = function (password, salt) {
-    const hash = crypto.createHmac('sha512', salt);
+    const hash = createHmac('sha512', salt);
     hash.update(password);
     const value = hash.digest('hex');
     return {
@@ -92,7 +92,7 @@ async function logout(req, res, next) {
 }
 
 
-module.exports = {
+export {
     saltHashPassword,
     sha512,
     generateToken,

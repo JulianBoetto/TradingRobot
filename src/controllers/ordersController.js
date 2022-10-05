@@ -1,10 +1,10 @@
-const moment = require("moment");
-const api = require('../api');
+import moment from "moment";
+import { allOrders as _allOrders, allTrades } from '../api.js';
 
 class OrdersController {
     async allOrders(req, res) {
         try {
-            const orders = await api.allOrders();
+            const orders = await _allOrders();
             orders.map(order => {
                 order.formatTime = moment(order.time).format("DD/MM/YYYY"),
                     order.total = parseFloat((Number(order.price) * Number(order.origQty)).toFixed(5)),
@@ -26,7 +26,7 @@ class OrdersController {
             const { price, origQty } = req.body;
             let totalValue = 0;
             let totalQty = 0;
-            let historic = await api.allTrades(symbol);
+            let historic = await allTrades(symbol);
             historic.map(history => {
                 let quoteQty = Number(history.quoteQty);
                 let commission = Number(history.commission);
@@ -91,4 +91,4 @@ class OrdersController {
     // };
 }
 
-module.exports = OrdersController;
+export default OrdersController;

@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const { verifyToken } = require("../lib/password");
-const ChartController = require("../controllers/chartController");
+import { Router } from "express";
+const router = Router();
+import { verifyToken } from "../lib/password.js";
+import ChartController from "../controllers/chartController.js";
 const chartController = new ChartController();
 
 router.post("/", verifyToken, chartController.klines);
 
-module.exports = router;
+export default router;

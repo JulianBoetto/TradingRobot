@@ -5,4 +5,4 @@ class Candle {
     }
 };
 
-module.exports = Candle;
+export default Candle;

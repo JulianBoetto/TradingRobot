@@ -1,4 +1,4 @@
-const database = require('./src/config/database');
+import database from './src/config/database.js';
 
 class App {
     async readyDB() {
@@ -14,4 +14,4 @@ class App {
     }
 }
 
-module.exports = App;
+export default App;

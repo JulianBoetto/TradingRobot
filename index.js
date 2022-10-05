@@ -1,18 +1,17 @@
-const App = require("./app");
-const express = require("express");
-const bodyParser = require('body-parser');;
-const { json } = require('express');
-const app = express(json);
-const router = require("./src/routes/index");
-const auth = require("./src/routes/auth");
-const order = require("./src/routes/orders");
-const chart = require("./src/routes/chart");
-const symbol = require("./src/routes/symbols");
-const cors = require("./src/config/cors")
-const cron = require('node-cron');
-const message = require("./src/lib/messages");
+import App from "./app.js";
+import express from "express";
+const app = express();
+import router from "./src/routes/index.js";
+import auth from "./src/routes/auth.js";
+import order from "./src/routes/orders.js";
+import chart from "./src/routes/chart.js";
+import symbol from "./src/routes/symbols.js";
+import cors from "./src/config/cors.js";
+import { schedule } from 'node-cron';
+import message from "./src/lib/messages.js";
 
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json())
 // app.use(require("cors")());
 app.use(cors);
 
@@ -24,7 +23,7 @@ const appInstance = new App();
   await appInstance.readyDB();
   appInstance.listen();
 
-  cron.schedule('20 * * * * *', () => {
+  schedule('20 * * * * *', () => {
     message();
   });
 })();
@@ -37,4 +36,4 @@ app.use("/symbols", symbol);
 
 app.listen(PORT, () => console.log(`Server run in http://localhost:${PORT}`));
 
-module.exports = appInstance;
+export default appInstance;

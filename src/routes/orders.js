@@ -1,11 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const api = require('../api');
-const { verifyToken } = require("../lib/password");
-const OrdersController = require("../controllers/ordersController");
+import { Router } from "express";
+const router = Router();
+import { verifyToken } from "../lib/password.js";
+import OrdersController from "../controllers/ordersController.js";
 const ordersController = new OrdersController();
 
 router.post('/allOrders', verifyToken, ordersController.allOrders);
 router.post('/historic/:id', verifyToken, ordersController.historic);
 
-module.exports = router;
+export default router;

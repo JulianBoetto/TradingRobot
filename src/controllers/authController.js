@@ -1,8 +1,7 @@
-const Users = require("../models/users");
-const AccessToken = require("../models/accessToken");
-const { generateToken, validatePassword } = require("../lib/password");
-const CryptoPass = require('../lib/password');
-require('dotenv').config();
+import Users from "../models/users.js";
+import AccessToken from "../models/accessToken.js";
+import { generateToken, validatePassword, saltHashPassword } from "../lib/password.js";
+import "dotenv/config";
 
 class AuthController {
   async login(req, res) {
@@ -52,7 +51,7 @@ class AuthController {
       if (!password) {
         return { statusCode: 400, message: `Registration failed` }
       }
-      let pass = CryptoPass.saltHashPassword(password);
+      let pass = saltHashPassword(password);
       let userPassword = {
         encryptedPassword: pass.passwordHash,
         passwordSalt: pass.salt
@@ -84,4 +83,4 @@ const findByCrendentials = async (email, password) => {
   return user
 }
 
-module.exports = AuthController;
+export default AuthController;

@@ -1,5 +1,5 @@
-const api = require('../api');
-const Symbols = require("../models/symbols");
+import { priceTicker } from '../api.js';
+import Symbols from "../models/symbols.js";
 
 class SymbolsController {
     async allSymbols(req, res) {
@@ -17,7 +17,7 @@ class SymbolsController {
             symbol.toUpperCase();
             pair.toUpperCase();
             const newSymbol = `${symbol}${pair}`;
-            const symbolIsValid = await api.priceTicker(newSymbol);
+            const symbolIsValid = await priceTicker(newSymbol);
             if(symbolIsValid) {
                 const symbols = await Symbols.create({ symbol, pair });
                 res.status(200).send(symbols);
@@ -34,7 +34,7 @@ class SymbolsController {
             const { symbol, pair } = req.params;
             symbol.toUpperCase();
             pair.toUpperCase();
-            const symbols = await Symbols.deleteOne({ symbol: symbol, pair: pair });
+            const symbols = await deleteOne({ symbol: symbol, pair: pair });
             res.status(200).send(symbols);
         } catch (error) {
             res.status(401).send(error);
@@ -42,4 +42,4 @@ class SymbolsController {
     }
 }
 
-module.exports = SymbolsController;
+export default SymbolsController;

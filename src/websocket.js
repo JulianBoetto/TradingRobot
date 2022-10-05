@@ -1,4 +1,4 @@
-const WebSocket = require('ws');
+import WebSocket from 'ws';
 const ws = new WebSocket(`wss://stream.binance.com:9443/ws/ticker`);
 
 function onConnectWS(symbol) {
@@ -27,6 +27,6 @@ function onConnectWS(symbol) {
 
 }
 
-module.exports = {
+export {
     onConnectWS
 }

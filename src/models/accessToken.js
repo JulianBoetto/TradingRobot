@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const accessTockenSchema = new Schema({
+const accessTockenSchema = mongoose.Schema({
     userId: {
         type: String,
         required: true
@@ -14,4 +13,4 @@ const accessTockenSchema = new Schema({
 
 const AccessToken = mongoose.model("AccessToken", accessTockenSchema);
 
-module.exports = AccessToken;
+export default AccessToken;

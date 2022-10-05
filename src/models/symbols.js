@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const symbolSchema = new Schema({
+const symbolSchema = mongoose.Schema({
     symbol: {
         type: String,
         required: true
@@ -14,4 +13,4 @@ const symbolSchema = new Schema({
 
 const Symbols = mongoose.model("Symbol", symbolSchema)
 
-module.exports = Symbols;
+export default Symbols;

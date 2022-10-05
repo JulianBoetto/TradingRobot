@@ -1,15 +1,16 @@
 const accountSid = process.env.TWILIO_ID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
-const Symbols = require("../models/symbols");
-const api = require("../api");
+import Symbols from "../models/symbols.js";
+import { priceTicker24h } from "../api.js";
+import Twilio from "twilio";
 
+const client = new Twilio(accountSid, authToken);
 
 async function message() {
     const orders = await Symbols.find();
     const getValue = symbol =>
         new Promise(resolve =>
-            resolve(api.priceTicker24h(symbol))
+            resolve(priceTicker24h(symbol))
         );
 
     const sendMessage = async () => {
@@ -38,4 +39,4 @@ async function message() {
 
 
 
-module.exports = message;
+export default message;

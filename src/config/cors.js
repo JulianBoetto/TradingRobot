@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+import { Router } from "express";
+const router = Router();
 
 router.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -9,4 +9,4 @@ router.use(function (req, res, next) {
     next();
 });
 
-module.exports = router;
+export default router;

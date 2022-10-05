@@ -1,8 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const api = require('../api');
-const { verifyToken } = require("../lib/password");
-const SymbolsController = require("../controllers/symbolsController");
+import { Router } from "express";
+const router = Router();
+import { verifyToken } from "../lib/password.js";
+import SymbolsController from "../controllers/symbolsController.js";
 const symbolsController = new SymbolsController();
 
 router.post('/allSymbols', 
@@ -11,4 +10,4 @@ symbolsController.allSymbols);
 router.post('/createSymbol', verifyToken, symbolsController.createSymbols);
 router.delete('/removeSymbol/:symbol/:pair', verifyToken, symbolsController.removeSymbols);
 
-module.exports = router;
+export default router;
