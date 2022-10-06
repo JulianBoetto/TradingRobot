@@ -1,6 +1,5 @@
-import App from "./app.js";
 import express from "express";
-const app = express();
+import App from "./app.js";
 import router from "./src/routes/index.js";
 import auth from "./src/routes/auth.js";
 import order from "./src/routes/orders.js";
@@ -10,6 +9,7 @@ import cors from "./src/config/cors.js";
 import { schedule } from 'node-cron';
 import message from "./src/lib/messages.js";
 
+const app = express();
 app.use(express.urlencoded({extended: true}));
 app.use(express.json())
 // app.use(require("cors")());
@@ -24,7 +24,8 @@ const appInstance = new App();
   appInstance.listen();
 
   schedule('20 * * * * *', () => {
-    message();
+    console.log(Date.now());
+    // message();
   });
 })();
 

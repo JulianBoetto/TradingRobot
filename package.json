@@ -7,7 +7,7 @@
     "start": "node -r .",
     "dev": "cross-env NODE_ENV=development nodemon index.js"
   },
-  "type":"module",
+  "type": "module",
   "author": "Julián Boetto",
   "license": "ISC",
   "dependencies": {
