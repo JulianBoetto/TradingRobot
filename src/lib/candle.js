@@ -1,7 +1,11 @@
 class Candle {
     constructor(openTime, open, high, low, close) {
-        this.x = new Date(openTime);
-        this.y = [parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close)]
+        const date = openTime/1000;
+        this.time = date;
+        this.open = parseFloat(open);
+        this.high = parseFloat(high);
+        this.low = parseFloat(low);
+        this.close = parseFloat(close);
     }
 };
 
