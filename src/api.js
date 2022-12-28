@@ -82,7 +82,7 @@ async function exchangeInfo() {
     return publicCall('/v3/exchangeInfo')
 }
 
-async function klines(symbol, interval, limit = 60) {
+async function klines(symbol, interval, limit = 100) {
     return publicCall('/v3/klines', { symbol, interval, limit })
 }
 
